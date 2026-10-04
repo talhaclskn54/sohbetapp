@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sohbet Arkadaşım - Giriş</title>
+    <!-- Firebase SDK v9 (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #0f0f11;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Ana Uygulama Dış Çerçevesi */
+        .app-container {
+            width: 100%;
+            max-width: 400px;
+            height: 100%;
+            max-height: 800px;
+            background-color: #151518;
+            border-radius: 28px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            border: 1px solid #222226;
+            position: relative;
+            overflow-y: auto;
+        }
+        
+        /* Üst Kısım / Çerçevesiz Logo ve İsim Alanı */
+        .top-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            padding: 15px;
+            flex-shrink: 0;
+            gap: 10px;
+        }
+
+        .mini-icon-container {
+            width: 45px;
+            height: 40px;
+            background: #ff2a2a;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            box-shadow: 0 0 15px rgba(255, 42, 42, 0.4);
+        }
+
+        .mini-icon-container svg {
+            width: 24px;
+            height: 24px;
+            fill: #151518;
+        }
+
+        .brand-title-area h1 {
+            font-size: 18px;
+            color: #ffffff;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+
+        /* TOAST & UYARI BİLDİRİMİ */
+        #toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff2a2a;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 15px rgba(255, 42, 42, 0.4);
+            text-align: center;
+            max-width: 90%;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translate(-50%, -10px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
+        #global-loader {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 15, 17, 0.9);
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+            border-radius: 28px;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 42, 42, 0.1);
+            border-top: 4px solid #ff2a2a;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* FORM ELEMANLARI */
+        .form-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: auto 0;
+            width: 100%;
+        }
+
+        .input-group {
+            text-align: left;
+            position: relative;
+        }
+
+        .input-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #888892;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .custom-input {
+            width: 100%;
+            background: #1c1c21;
+            border: 1.5px solid #27272d;
+            padding: 12px 16px;
+            border-radius: 16px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+            transition: 0.3s;
+        }
+        .custom-input:focus {
+            border-color: #ff2a2a;
+            box-shadow: 0 0 10px rgba(255, 42, 42, 0.15);
+        }
+
+        /* RANDOM ÜRET BUTONU */
+        .random-btn {
+            position: absolute;
+            right: 10px;
+            top: 31px;
+            background: #27272d;
+            border: none;
+            color: #ff2a2a;
+            padding: 6px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .random-btn:active { background: #32323a; }
+
+        /* MODERN BUTONLAR */
+        .btn-modern {
+            width: 100%;
+            padding: 13px;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-primary-modern {
+            background: #ff2a2a;
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 42, 42, 0.3);
+        }
+        .btn-primary-modern:active { transform: scale(0.97); opacity: 0.9; }
+        
+        /* GOOGLE BUTONU */
+        .btn-google {
+            background: #1c1c21;
+            color: #ffffff;
+            font-weight: 600;
+            border: 1px solid #27272d;
+        }
+        .btn-google:active { background: #27272d; }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: #72727e;
+            font-size: 11px;
+            margin: 4px 0;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #27272d;
+        }
+        .divider::before { margin-right: .75em; }
+        .divider::after { margin-left: .75em; }
+
+        .auth-switch-text {
+            font-size: 13px;
+            color: #888892;
+            text-align: center;
+            margin-top: 5px;
+        }
+        .auth-switch-text span {
+            color: #ff2a2a;
+            font-weight: 700;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="toast"></div>
+    
+    <!-- Yükleme ve Doğrulama Bilgi Ekranı -->
+    <div id="global-loader">
+        <div class="spinner" id="loader-spinner"></div>
+        <div class="font-bold text-sm" id="loader-text" style="color: #fff; max-width: 320px; line-height: 1.5;">İşlem yapılıyor...</div>
+        <div id="verification-box" style="display: none; margin-top: 20px; width: 100%; max-width: 320px;">
+            <button onclick="checkEmailVerified()" class="btn-modern btn-primary-modern" style="padding: 12px; font-size: 13px;">Doğrulamayı Kontrol Et & Giriş Yap</button>
+            <button onclick="closeLoader()" style="background: none; border: none; color: #888892; font-size: 12px; margin-top: 15px; cursor: pointer; text-decoration: underline;">Kapat / Geri Dön</button>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Üst Kısım: Çerçevesiz Logo ve "Sohbet Arkadaşım" Yazısı -->
+        <div class="top-header">
+            <div class="mini-icon-container">
+                <svg viewBox="0 0 24 24">
+                    <path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm3-3c-.83 0-1.5-.67-1.5-1.5S18.67 9 19.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"></path>
+                </svg>
+            </div>
+            <div class="brand-title-area">
+                <h1>Sohbet Arkadaşım</h1>
+            </div>
+        </div>
+
+        <!-- Form Alanı -->
+        <div class="form-content">
+            <!-- Kullanıcı Adı (Sadece Kayıt Olurken) -->
+            <div id="username-group" class="input-group" style="display: none;">
+                <label class="input-label">Kullanıcı Adı</label>
+                <input type="text" id="username-input" class="custom-input" placeholder="Kullanıcı adınızı girin...">
+                <button type="button" class="random-btn" onclick="generateRandomUsername()">Rastgele</button>
+            </div>
+
+            <!-- E-Posta -->
+            <div class="input-group">
+                <label class="input-label">E-Posta Adresi</label>
+                <input type="email" id="email-input" class="custom-input" placeholder="ornek@mail.com">
+            </div>
+
+            <!-- Şifre -->
+            <div class="input-group">
+                <label class="input-label">Şifre</label>
+                <input type="password" id="password-input" class="custom-input" placeholder="••••••••">
+            </div>
+
+            <div style="display: flex; justify-content: flex-end;">
+                <span onclick="forgotPassword()" style="font-size: 12px; color: #ff2a2a; cursor: pointer; font-weight: 600;">Şifremi Unuttum?</span>
+            </div>
+
+            <!-- İşlem Butonu -->
+            <button id="action-btn" class="btn-modern btn-primary-modern" onclick="handleAuth()">Giriş Yap</button>
+            
+            <div class="divider">VEYA</div>
+
+            <!-- Google ile Giriş Butonu -->
+            <button class="btn-modern btn-google" onclick="handleGoogleLogin()">
+                <i class="fa-brands fa-google" style="color: #ea4335;"></i> Google ile Devam Et
+            </button>
+
+            <!-- Mod Değiştirme -->
+            <div class="auth-switch-text" id="switch-text">
+                Hesabın yok mu? <span onclick="toggleAuthMode()">Kayıt Ol</span>
+            </div>
+        </div>
+        
+        <div></div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyCoDVcOFPZkaCUr-ac1GsuAkxm8nNgzL3M",
+          authDomain: "sohbet-arkadasim-b1402.firebaseapp.com",
+          databaseURL: "https://sohbet-arkadasim-b1402-default-rtdb.firebaseio.com",
+          projectId: "sohbet-arkadasim-b1402",
+          storageBucket: "sohbet-arkadasim-b1402.firebasestorage.app",
+          messagingSenderId: "345189828948",
+          appId: "1:345189828948:web:60b6d774230559956c60c1",
+          measurementId: "G-0ZTJJXFX87"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        let isRegisterMode = false;
+
+        function toggleAuthMode() {
+            isRegisterMode = !isRegisterMode;
+            const usernameGroup = document.getElementById('username-group');
+            const actionBtn = document.getElementById('action-btn');
+            const switchText = document.getElementById('switch-text');
+
+            if (isRegisterMode) {
+                usernameGroup.style.display = 'block';
+                actionBtn.innerText = "Kayıt Ol";
+                switchText.innerHTML = 'Zaten hesabın var mı? <span onclick="toggleAuthMode()">Giriş Yap</span>';
+                generateRandomUsername();
+            } else {
+                usernameGroup.style.display = 'none';
+                actionBtn.innerText = "Giriş Yap";
+                switchText.innerHTML = 'Hesabın yok mu? <span onclick="toggleAuthMode()">Kayıt Ol</span>';
+            }
+        }
+
+        function generateRandomUsername() {
+            const rastgeleSayi = Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('username-input').value = "Kullanici_" + rastgeleSayi;
+        }
+
+        function getTurkishErrorMessage(errorCode) {
+            switch (errorCode) {
+                case 'auth/email-already-in-use':
+                    return "Bu e-posta adresi zaten başka bir hesap tarafından kullanılıyor.";
+                case 'auth/invalid-email':
+                    return "Geçersiz bir e-posta adresi girdiniz.";
+                case 'auth/weak-password':
+                    return "Şifreniz çok zayıf. En az 6 karakter olmalıdır.";
+                case 'auth/user-not-found':
+                    return "Bu e-posta adresine kayıtlı bir kullanıcı bulunamadı.";
+                case 'auth/wrong-password':
+                    return "Girdiğiniz şifre hatalı.";
+                case 'auth/too-many-requests':
+                    return "Çok fazla başarısız deneme yapıldı. Lütfen daha sonra tekrar deneyin.";
+                default:
+                    return "Bir hata oluştu. Lütfen bilgilerinizi kontrol edip tekrar deneyin.";
+            }
+        }
+
+        // Kullanıcı verilerini localStorage'a kayıt edip gruplar sistemine yönlendiren yardımcı fonksiyon
+        async function saveUserDataAndRedirect(uid, email) {
+            try {
+                // Veritabanından kullanıcının kayıtlı kullanıcı adını çekelim
+                const userSnap = await db.ref('users/' + uid).once('value');
+                let username = "Misafir";
+                
+                if (userSnap.exists() && userSnap.val().username) {
+                    username = userSnap.val().username;
+                }
+
+                // Bilgileri tarayıcı hafızasına güvenle kaydediyoruz (Gruplar ekranı buradan okuyacak)
+                localStorage.setItem('gizliChatID', uid);
+                localStorage.setItem('chat_user_email', email);
+                localStorage.setItem('chat_user_name', username);
+
+                showToast("Giriş başarılı! Gruplara yönlendiriliyorsunuz...");
+                
+                // İstediğin go:Gruplar sistemine yönlendirme
+                setTimeout(() => {
+                    window.location.href = "Gruplar.html";
+                }, 1000);
+            } catch (err) {
+                console.error(err);
+                // Hata durumunda varsayılan e-posta ön eki ile devam et
+                localStorage.setItem('gizliChatID', uid);
+                localStorage.setItem('chat_user_email', email);
+                localStorage.setItem('chat_user_name', email.split('@')[0]);
+                window.location.href = "Gruplar.html";
+            }
+        }
+
+        async function handleAuth() {
+            const email = document.getElementById('email-input').value.trim();
+            const password = document.getElementById('password-input').value.trim();
+            const username = document.getElementById('username-input').value.trim();
+
+            if (!email || !password || (isRegisterMode && !username)) {
+                showToast("Lütfen tüm alanları eksiksiz doldurun!");
+                return;
+            }
+
+            const loader = document.getElementById('global-loader');
+            const loaderText = document.getElementById('loader-text');
+            const verificationBox = document.getElementById('verification-box');
+            const spinner = document.getElementById('loader-spinner');
+            
+            verificationBox.style.display = 'none';
+            spinner.style.display = 'block';
+            loader.style.display = 'flex';
+
+            try {
+                if (isRegisterMode) {
+                    loaderText.innerText = "Kullanıcı adı kontrol ediliyor...";
+                    const usersRef = db.ref('users');
+                    const snapshot = await usersRef.orderByChild('username').equalTo(username).once('value');
+                    
+                    if (snapshot.exists()) {
+                        loader.style.display = 'none';
+                        showToast("Bu kullanıcı adı zaten alınmış. Lütfen başka bir tane seçin.");
+                        return;
+                    }
+
+                    loaderText.innerText = "Kayıt oluşturuluyor...";
+                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                    const user = userCredential.user;
+
+                    await db.ref('users/' + user.uid).set({
+                        uid: user.uid,
+                        username: username,
+                        email: email,
+                        createdAt: Date.now()
+                    });
+
+                    await user.sendEmailVerification();
+
+                    spinner.style.display = 'none';
+                    loaderText.innerHTML = "<b>Kayıt Başarılı!</b><br><br>E-posta adresinize doğrulama bağlantısı gönderildi. Lütfen gelen kutunuzu kontrol ederek bağlantıya tıklayın, ardından aşağıdaki butona basın.";
+                    verificationBox.style.display = 'block';
+
+                } else {
+                    loaderText.innerText = "Giriş yapılıyor...";
+                    const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                    const user = userCredential.user;
+
+                    await user.reload();
+
+                    if (!user.emailVerified) {
+                        spinner.style.display = 'none';
+                        loaderText.innerHTML = "<b>E-Posta Onayı Gerekli!</b><br><br>Hesabınıza giriş yapabilmek için e-postanıza gelen doğrulama bağlantısına tıklamanız gerekmektedir.";
+                        verificationBox.style.display = 'block';
+                        return;
+                    }
+
+                    // Başarılı giriş ve kullanıcı adını kaydederek gruplara yönlendir
+                    await saveUserDataAndRedirect(user.uid, user.email);
+                }
+            } catch (error) {
+                loader.style.display = 'none';
+                console.error(error);
+                showToast(getTurkishErrorMessage(error.code));
+            }
+        }
+
+        async function checkEmailVerified() {
+            const loader = document.getElementById('global-loader');
+            const loaderText = document.getElementById('loader-text');
+            const verificationBox = document.getElementById('verification-box');
+            const spinner = document.getElementById('loader-spinner');
+            
+            loaderText.innerText = "Durum kontrol ediliyor...";
+            spinner.style.display = 'block';
+            verificationBox.style.display = 'none';
+
+            try {
+                const user = auth.currentUser;
+                if (user) {
+                    await user.reload();
+                    if (user.emailVerified) {
+                        await saveUserDataAndRedirect(user.uid, user.email);
+                    } else {
+                        spinner.style.display = 'none';
+                        loaderText.innerHTML = "<b>Henüz Onaylanmadı!</b><br><br>E-posta adresiniz henüz doğrulanmamış. Lütfen bağlantıya tıkladığınızdan emin olun.";
+                        verificationBox.style.display = 'block';
+                    }
+                } else {
+                    loader.style.display = 'none';
+                    showToast("Oturum zaman aşımına uğradı, lütfen tekrar deneyin.");
+                }
+            } catch (error) {
+                loader.style.display = 'none';
+                showToast("Bir hata oluştu, lütfen tekrar deneyin.");
+            }
+        }
+
+        async function handleGoogleLogin() {
+            const loader = document.getElementById('global-loader');
+            const loaderText = document.getElementById('loader-text');
+            const spinner = document.getElementById('loader-spinner');
+            
+            spinner.style.display = 'block';
+            document.getElementById('verification-box').style.display = 'none';
+            loaderText.innerText = "Google hesapları yükleniyor...";
+            loader.style.display = 'flex';
+
+            const provider = new firebase.auth.GoogleAuthProvider();
+            provider.setCustomParameters({ prompt: 'select_account' });
+
+            try {
+                const result = await auth.signInWithPopup(provider);
+                const user = result.user;
+                let generatedUsername = user.displayName || ("Google_" + Math.floor(1000 + Math.random() * 9000));
+
+                const userRef = db.ref('users/' + user.uid);
+                const snapshot = await userRef.once('value');
+                
+                if (!snapshot.exists()) {
+                    await userRef.set({
+                        uid: user.uid,
+                        username: generatedUsername,
+                        email: user.email,
+                        createdAt: Date.now()
+                    });
+                } else if (snapshot.val().username) {
+                    generatedUsername = snapshot.val().username;
+                }
+
+                // Bilgileri kaydedip gruplara yönlendir
+                localStorage.setItem('gizliChatID', user.uid);
+                localStorage.setItem('chat_user_email', user.email);
+                localStorage.setItem('chat_user_name', generatedUsername);
+
+                showToast("Google ile giriş başarılı! Gruplara yönlendiriliyorsunuz...");
+                setTimeout(() => { window.location.href = "go:Gruplar"; }, 1000);
+
+            } catch (error) {
+                loader.style.display = 'none';
+                console.error(error);
+                if (error.code === 'auth/popup-blocked' || error.code === 'auth/cancelled-popup-request') {
+                    auth.signInWithRedirect(provider);
+                } else {
+                    showToast("Google Giriş Hatası: " + getTurkishErrorMessage(error.code));
+                }
+            }
+        }
+
+        async function forgotPassword() {
+            const email = document.getElementById('email-input').value.trim();
+            if (!email) {
+                showToast("Lütfen önce e-posta adresinizi girin!");
+                return;
+            }
+
+            try {
+                await auth.sendPasswordResetEmail(email);
+                showToast("Şifre sıfırlama bağlantısı e-postanıza gönderildi!");
+            } catch (error) {
+                showToast(getTurkishErrorMessage(error.code));
+            }
+        }
+
+        function closeLoader() {
+            document.getElementById('global-loader').style.display = 'none';
+        }
+
+        let toastTimer = null;
+
+        function showToast(m) {
+            const t = document.getElementById('toast');
+            t.innerText = m;
+            t.style.display = 'block';
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => { t.style.display = 'none'; toastTimer = null; }, 4500); 
+        }
+    </script>
+</body>
+</html>

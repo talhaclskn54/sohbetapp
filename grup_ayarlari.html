@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sohbet Arkadaşım - Grup Ayarları</title>
+    <!-- FontAwesome ikon kütüphanesi -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #0f0f11;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 400px;
+            height: 100%;
+            max-height: 800px;
+            background-color: #151518;
+            border-radius: 28px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            border: 1px solid #222226;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Üst Kısım */
+        .top-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            background: #1c1c21;
+            padding: 12px 15px;
+            border-radius: 18px;
+            border: 1px solid #27272d;
+            flex-shrink: 0;
+            gap: 12px;
+        }
+
+        .logo-box-mini {
+            display: flex;
+            align-items: center;
+        }
+
+        .mini-logo-frame {
+            width: 38px;
+            height: 38px;
+            background: #111113;
+            border: 1.5px solid #ff2a2a;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 10px rgba(255, 42, 42, 0.2);
+            cursor: pointer;
+        }
+
+        .mini-logo-frame svg {
+            width: 15px;
+            height: 15px;
+            fill: #ff2a2a;
+        }
+
+        .brand-title-area {
+            text-align: center;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .brand-title-area h1 {
+            font-size: 14px;
+            color: #ffffff;
+            font-weight: 700;
+            max-width: 190px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin: 0 auto;
+        }
+
+        .brand-title-area p {
+            font-size: 10px;
+            color: #888891;
+            margin-top: 1px;
+        }
+
+        /* İsmi Düzenle Butonu (Kurucuya Özel) */
+        .btn-edit-group-name {
+            background: rgba(255, 42, 42, 0.1);
+            color: #ff2a2a;
+            border: 1px solid rgba(255, 42, 42, 0.3);
+            font-size: 9px;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 4px;
+            display: inline-block;
+            transition: all 0.2s ease;
+        }
+        .btn-edit-group-name:hover {
+            background: #ff2a2a;
+            color: #fff;
+        }
+
+        /* Aksiyon Barı */
+        .action-bar-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .btn-action-custom {
+            background: #1c1c21;
+            color: #d1d1d6;
+            border: 1px solid #27272d;
+            padding: 7px 10px;
+            border-radius: 12px;
+            font-size: 10.5px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .btn-action-custom:hover {
+            border-color: #ff2a2a;
+            color: #fff;
+            background: rgba(255, 42, 42, 0.05);
+        }
+
+        .btn-action-custom i {
+            color: #ff2a2a;
+            font-size: 11px;
+        }
+
+        /* İçerik Kaydırma Alanı */
+        .settings-scroll-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .settings-scroll-container::-webkit-scrollbar {
+            width: 4px;
+        }
+        .settings-scroll-container::-webkit-scrollbar-thumb {
+            background: #27272d;
+            border-radius: 10px;
+        }
+
+        .section-label {
+            font-size: 11px;
+            color: #ff2a2a;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding-left: 4px;
+        }
+
+        /* Üye Listesi Kutusu */
+        .members-list-box {
+            background: #1c1c21;
+            border: 1px solid #27272d;
+            border-radius: 18px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .member-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            background: #151518;
+            border: 1px solid #222226;
+            border-radius: 12px;
+            gap: 8px;
+        }
+
+        .member-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow: hidden;
+            flex-grow: 1;
+        }
+
+        .member-avatar {
+            width: 32px;
+            height: 32px;
+            background: #27272d;
+            border-radius: 9px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ff2a2a;
+            font-weight: 700;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .member-details {
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .member-name-row {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .member-details h4 {
+            font-size: 12px;
+            color: #ffffff;
+            font-weight: 600;
+            max-width: 110px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .member-details p {
+            font-size: 9.5px;
+            color: #888891;
+            margin-top: 1px;
+        }
+
+        .badge-founder {
+            background: rgba(255, 42, 42, 0.15);
+            color: #ff2a2a;
+            border: 1px solid rgba(255, 42, 42, 0.3);
+            font-size: 8px;
+            padding: 1px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .badge-admin {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            font-size: 8px;
+            padding: 1px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .member-actions {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .btn-give-auth {
+            background: #27272d;
+            color: #ffffff;
+            border: 1px solid #32323d;
+            padding: 5px 8px;
+            border-radius: 7px;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-give-auth:hover {
+            background: #ff2a2a;
+            border-color: #ff2a2a;
+        }
+
+        .btn-remove-member {
+            background: rgba(255, 42, 42, 0.1);
+            color: #ff2a2a;
+            border: 1px solid rgba(255, 42, 42, 0.3);
+            padding: 5px 7px;
+            border-radius: 7px;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .btn-remove-member:hover {
+            background: #ff2a2a;
+            color: #fff;
+        }
+
+        /* POPUP MODALLAR */
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-box {
+            width: 88%;
+            max-height: 85%;
+            background: #1c1c21;
+            border: 1px solid #32323d;
+            border-radius: 20px;
+            padding: 18px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transform: scale(0.9);
+            transition: transform 0.2s ease;
+        }
+
+        .modal-overlay.active .modal-box {
+            transform: scale(1);
+        }
+
+        .modal-header h3 {
+            font-size: 14px;
+            color: #ffffff;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .modal-header p {
+            font-size: 10.5px;
+            color: #888891;
+            text-align: center;
+            margin-top: 3px;
+        }
+
+        .auth-options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .auth-option-card {
+            background: #151518;
+            border: 1px solid #27272d;
+            border-radius: 12px;
+            padding: 10px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .auth-option-card:hover {
+            border-color: #ff2a2a;
+            background: rgba(255, 42, 42, 0.05);
+        }
+
+        .auth-option-card h5 {
+            font-size: 12px;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .auth-option-card p {
+            font-size: 10.5px;
+            color: #888891;
+            margin-top: 2px;
+            line-height: 1.3;
+        }
+
+        .search-input-box {
+            width: 100%;
+            background: #151518;
+            border: 1px solid #27272d;
+            border-radius: 12px;
+            padding: 9px 12px;
+            color: #fff;
+            font-size: 11.5px;
+            outline: none;
+        }
+        .search-input-box:focus {
+            border-color: #ff2a2a;
+        }
+
+        .modal-users-scroll {
+            max-height: 200px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding-right: 4px;
+        }
+
+        .modal-user-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            background: #151518;
+            border: 1px solid #222226;
+            border-radius: 10px;
+        }
+
+        .btn-add-user-item {
+            background: #ff2a2a;
+            color: #fff;
+            border: none;
+            padding: 5px 9px;
+            border-radius: 7px;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .modal-buttons-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .modal-close-btn {
+            flex: 1;
+            background: #27272d;
+            color: #ffffff;
+            border: none;
+            padding: 9px;
+            border-radius: 10px;
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.2s ease;
+        }
+
+        .modal-close-btn:hover {
+            background: #32323d;
+        }
+
+        .modal-confirm-btn {
+            flex: 1;
+            background: #ff2a2a;
+            color: #ffffff;
+            border: none;
+            padding: 9px;
+            border-radius: 10px;
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.2s ease;
+        }
+        .modal-confirm-btn:hover {
+            background: #e02424;
+        }
+
+        /* TOAST BİLDİRİMİ */
+        #toast { 
+            position: fixed; 
+            top: 20px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background: #ff3b3c; 
+            color: white; 
+            padding: 9px 18px; 
+            border-radius: 10px; 
+            font-size: 12px; 
+            font-weight: 700; 
+            z-index: 10000; 
+            display: none; 
+            box-shadow: 0 4px 15px rgba(255,59,60,0.4); 
+            text-align: center; 
+        }
+    </style>
+</head>
+<body>
+    <div id="toast"></div>
+
+    <div class="app-container">
+        
+        <!-- Üst Bar -->
+        <div class="top-header">
+            <div class="logo-box-mini" onclick="goBackToChat()" title="Sohbete Dön">
+                <div class="mini-logo-frame">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="brand-title-area">
+                <h1 id="settings-group-title">Grup Yükleniyor...</h1>
+                <p id="member-count-subtitle">0 Kullanıcı</p>
+                <div id="editGroupNameContainer"></div>
+            </div>
+        </div>
+
+        <!-- Üst Kontrol Barı (Sadece Yazma İzni) -->
+        <div class="action-bar-top" id="actionBarTop" style="display:none;">
+            <button class="btn-action-custom" id="chatPermissionBtn" onclick="openPermissionModal()" style="width: 100%;">
+                <i class="fa-solid fa-pen-nib"></i> <span id="permissionBtnText">Yazma: Herkes</span>
+            </button>
+        </div>
+
+        <div class="action-bar-top" id="actionBarBottomTop" style="display:none; margin-top: -4px;">
+            <button class="btn-action-custom" id="addGroupMemberBtn" onclick="openAddMemberModal()" style="width: 100%;">
+                <i class="fa-solid fa-user-plus"></i> Kullanıcı Ekle
+            </button>
+        </div>
+
+        <!-- Ayarlar Kaydırma Alanı -->
+        <div class="settings-scroll-container">
+            <div class="section-label">Kullanıcılar ve Yetkiler</div>
+            <div class="members-list-box" id="membersListBox">
+                <div style="text-align:center; color:#71717a; font-size:12px; padding: 15px;">Kullanıcılar yükleniyor...</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- YETKİ VERME MODALI -->
+    <div class="modal-overlay" id="authModalOverlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Yetki Düzenle</h3>
+                <p id="modalUserNameText">Kullanıcı için yetki seçin</p>
+            </div>
+            <div class="auth-options-list">
+                <div class="auth-option-card" onclick="assignRole('moderator')">
+                    <h5>Yönetici</h5>
+                    <p>Üye ekleme ve çıkarma işlemlerini yapar.</p>
+                </div>
+                <div class="auth-option-card" onclick="assignRole('member')">
+                    <h5>Herkes (Normal Üye)</h5>
+                    <p>Özel bir yönetsel yetkisi bulunmaz.</p>
+                </div>
+            </div>
+            <button class="modal-close-btn" onclick="closeAuthModal()">Vazgeç</button>
+        </div>
+    </div>
+
+    <!-- YAZMA YETKİSİ SEÇİM MODALI -->
+    <div class="modal-overlay" id="permissionModalOverlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Yazma Yetkisi Ayarla</h3>
+                <p>Grupta kimlerin mesaj yazabileceğini seçin</p>
+            </div>
+            <div class="auth-options-list">
+                <div class="auth-option-card" onclick="updateChatPermission('everyone')">
+                    <h5>Herkes</h5>
+                    <p>Gruptaki tüm üyeler mesaj yazabilir.</p>
+                </div>
+                <div class="auth-option-card" onclick="updateChatPermission('admin_only')">
+                    <h5>Kurucu & Yönetici</h5>
+                    <p>Sadece grup kurucusu ve yöneticiler mesaj yazabilir.</p>
+                </div>
+            </div>
+            <button class="modal-close-btn" onclick="closePermissionModal()">Vazgeç</button>
+        </div>
+    </div>
+
+    <!-- KULLANICI EKLEME / DAVET ETME MODALI -->
+    <div class="modal-overlay" id="addMemberModalOverlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Kullanıcı Davet Et</h3>
+                <p>Gruba davet etmek istediğiniz kullanıcıyı seçin</p>
+            </div>
+            <input type="text" id="userSearchInput" class="search-input-box" placeholder="Kullanıcı adı ile ara..." oninput="filterUsersList(this.value)">
+            <div class="modal-users-scroll" id="allUsersListContainer">
+                <div style="text-align:center; color:#71717a; font-size:12px; padding: 15px;">Kullanıcılar yükleniyor...</div>
+            </div>
+            <button class="modal-close-btn" onclick="closeAddMemberModal()">Kapat</button>
+        </div>
+    </div>
+
+    <!-- GRUP İSMİNİ DÜZENLEME MODALI -->
+    <div class="modal-overlay" id="editGroupNameModalOverlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Grup İsmini Düzenle</h3>
+                <p>Yeni grup adını girin</p>
+            </div>
+            <input type="text" id="newGroupNameInput" class="search-input-box" placeholder="Yeni grup adı..." maxlength="30">
+            <div class="modal-buttons-row">
+                <button class="modal-close-btn" onclick="closeEditGroupNameModal()">Vazgeç</button>
+                <button class="modal-confirm-btn" onclick="saveNewGroupName()">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GRUPTAN ÇIKARMA ONAY MODALI -->
+    <div class="modal-overlay" id="removeConfirmModalOverlay">
+        <div class="modal-box" style="text-align:center;">
+            <div class="modal-header">
+                <h3>Gruptan Çıkar</h3>
+                <p id="removeModalSubText">Kişi gruptan çıkartılıyor...</p>
+            </div>
+            <div class="modal-buttons-row">
+                <button class="modal-close-btn" onclick="closeRemoveModal()">Vazgeç</button>
+                <button class="modal-confirm-btn" id="confirmRemoveBtn">Evet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Entegrasyonu -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCoDVcOFPZkaCUr-ac1GsuAkxm8nNgzL3M",
+            authDomain: "sohbet-arkadasim-b1402.firebaseapp.com",
+            projectId: "sohbet-arkadasim-b1402",
+            storageBucket: "sohbet-arkadasim-b1402.firebasestorage.app",
+            messagingSenderId: "345189828948",
+            appId: "1:345189828948:web:60b6d774230559956c60c1",
+            measurementId: "G-0ZTJJXFX87"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        let currentUserId = localStorage.getItem('gizliChatID');
+        let currentUserName = localStorage.getItem('chat_user_name') || "Yönetici";
+        let activeGroupId = localStorage.getItem('active_group_id');
+        let activeGroupName = localStorage.getItem('active_group_name') || "Grup Ayarları";
+        let targetUserIdForAuth = null;
+        let userIdToRemove = null;
+        let allSystemUsersCache = {};
+        let groupDataCache = null;
+
+        document.getElementById('settings-group-title').innerText = activeGroupName;
+
+        if (!activeGroupId) {
+            showToast("Aktif grup bulunamadı!");
+            setTimeout(() => { window.location.href = "go:gruplar"; }, 1500);
+        }
+
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUserId = user.uid;
+                db.ref(`users/${user.uid}`).once('value', snap => {
+                    if(snap.val() && snap.val().username) {
+                        currentUserName = snap.val().username;
+                    }
+                });
+            }
+            loadGroupSettingsData();
+        });
+
+        function goBackToChat() {
+            window.location.href = "go:mesaj";
+        }
+
+        function loadGroupSettingsData() {
+            db.ref(`groups/${activeGroupId}`).on('value', async (snapshot) => {
+                if (!snapshot.exists()) {
+                    document.getElementById('membersListBox').innerHTML = `<div style="text-align:center; color:#71717a; font-size:12px; padding: 15px;">Grup verisi bulunamadı.</div>`;
+                    return;
+                }
+                
+                groupDataCache = snapshot.val();
+
+                const groupName = groupDataCache.name || activeGroupName;
+                const creatorId = groupDataCache.createdBy || groupDataCache.creator || "";
+                const chatPermission = groupDataCache.chatPermission || groupDataCache.permission || "everyone";
+                
+                let membersRaw = groupDataCache.members;
+                let membersArray = [];
+                
+                if (Array.isArray(membersRaw)) {
+                    membersArray = membersRaw.filter(m => m !== null && m !== undefined);
+                } else if (membersRaw && typeof membersRaw === 'object') {
+                    membersArray = Object.values(membersRaw).filter(m => m !== null && m !== undefined);
+                }
+
+                document.getElementById('settings-group-title').innerText = groupName;
+                document.getElementById('member-count-subtitle').innerText = `${membersArray.length} Kullanıcı`;
+
+                const editNameContainer = document.getElementById('editGroupNameContainer');
+                if (currentUserId === creatorId) {
+                    editNameContainer.innerHTML = `<button class="btn-edit-group-name" onclick="openEditGroupNameModal()">İsmi Düzenle</button>`;
+                } else {
+                    editNameContainer.innerHTML = "";
+                }
+
+                // DÜZELTME 1: Yazma izni metni "Kurucu & Yönetici" olarak güncellendi
+                const permissionTextSpan = document.getElementById('permissionBtnText');
+                if (permissionTextSpan) {
+                    permissionTextSpan.innerText = (chatPermission === 'admin_only' || chatPermission === 'creator') ? "Yazma: Kurucu & Yönetici" : "Yazma: Herkes";
+                }
+
+                let currentUserObj = membersArray.find(m => {
+                    let mId = typeof m === 'string' ? m : (m.uid || m.id || m.userId);
+                    return mId === currentUserId;
+                });
+                
+                let userRole = currentUserObj ? (currentUserObj.role || (currentUserId === creatorId ? 'founder' : 'member')) : 'member';
+                if (currentUserId === creatorId) userRole = 'founder';
+
+                if (currentUserId === creatorId || userRole === 'moderator' || userRole === 'sv1') {
+                    document.getElementById('actionBarTop').style.display = 'flex';
+                    document.getElementById('actionBarBottomTop').style.display = 'flex';
+                }
+
+                try {
+                    const usersSnapshot = await db.ref('users').once('value');
+                    allSystemUsersCache = usersSnapshot.exists() ? usersSnapshot.val() : {};
+
+                    let enrichedMembers = membersArray.map(m => {
+                        let uid = typeof m === 'string' ? m : (m.uid || m.id || m.userId);
+                        let role = typeof m === 'object' && m.role ? m.role : (uid === creatorId ? 'founder' : 'member');
+                        if (role === 'founder' && uid !== creatorId) role = 'member';
+                        let username = typeof m === 'object' ? (m.username || m.name) : null;
+
+                        if (!username && uid && allSystemUsersCache[uid]) {
+                            username = allSystemUsersCache[uid].username;
+                        }
+
+                        return {
+                            uid: uid,
+                            username: username || "Bilinmeyen Kullanıcı",
+                            role: role
+                        };
+                    });
+
+                    renderMembersList(enrichedMembers, creatorId, userRole);
+                } catch (err) {
+                    console.error("Kullanıcılar yüklenirken hata:", err);
+                    document.getElementById('membersListBox').innerHTML = `<div style="text-align:center; color:#ff2a2a; font-size:12px; padding: 15px;">Kullanıcılar yüklenemedi.</div>`;
+                }
+            });
+        }
+
+        function renderMembersList(members, creatorId, currentUserRole) {
+            const listContainer = document.getElementById('membersListBox');
+            listContainer.innerHTML = "";
+
+            if (!members || members.length === 0) {
+                listContainer.innerHTML = `<div style="text-align:center; color:#71717a; font-size:12px; padding: 15px;">Üye bulunamadı.</div>`;
+                return;
+            }
+
+            let founderMember = members.find(m => m.uid === creatorId);
+            let otherMembers = members.filter(m => m.uid !== creatorId);
+
+            let sortedMembers = [];
+            if (founderMember) sortedMembers.push({ ...founderMember, isFounder: true });
+            otherMembers.forEach(m => sortedMembers.push({ ...m, isFounder: false }));
+
+            const isUserFounder = (currentUserId === creatorId);
+            const canManageMembers = (isUserFounder || currentUserRole === 'moderator');
+
+            sortedMembers.forEach((member) => {
+                const memberId = member.uid;
+                const isMe = (memberId === currentUserId);
+                const displayName = member.username || "Kullanıcı";
+                const initial = displayName.charAt(0).toUpperCase();
+                const role = member.role || (member.isFounder ? 'founder' : 'member');
+
+                let badgeHtml = "";
+                let roleSubText = "Grup Üyesi";
+
+                if (member.isFounder) {
+                    badgeHtml = `<span class="badge-founder">Kurucu</span>`;
+                    roleSubText = "Grup Kurucusu";
+                } else if (role === 'moderator') {
+                    badgeHtml = `<span class="badge-admin">Yönetici</span>`;
+                    roleSubText = "Üye Yöneticisi";
+                }
+
+                if (isMe) roleSubText += " (Sen)";
+
+                let actionsHtml = `<div class="member-actions">`;
+                if (isUserFounder && !member.isFounder && !isMe) {
+                    actionsHtml += `<button class="btn-give-auth" onclick="openAuthModal('${memberId}', '${escapeHtml(displayName)}')">Yetki Ver</button>`;
+                }
+
+                let canRemoveThisMember = false;
+                if (canManageMembers && !member.isFounder && !isMe) {
+                    if (isUserFounder) {
+                        canRemoveThisMember = true;
+                    } else if (currentUserRole === 'moderator' && role !== 'moderator') {
+                        canRemoveThisMember = true;
+                    }
+                }
+
+                if (canRemoveThisMember) {
+                    actionsHtml += `<button class="btn-remove-member" onclick="promptRemoveMember('${memberId}')" title="Üyeyi Çıkar"><i class="fa-solid fa-user-minus"></i></button>`;
+                }
+                actionsHtml += `</div>`;
+
+                const memberDiv = document.createElement('div');
+                memberDiv.className = 'member-item';
+                memberDiv.innerHTML = `
+                    <div class="member-info">
+                        <div class="member-avatar">${initial}</div>
+                        <div class="member-details">
+                            <div class="member-name-row">
+                                <h4>${escapeHtml(displayName)}</h4>
+                                ${badgeHtml}
+                            </div>
+                            <p>${roleSubText}</p>
+                        </div>
+                    </div>
+                    ${actionsHtml}
+                `;
+                listContainer.appendChild(memberDiv);
+            });
+        }
+
+        function containsProfanity(text) {
+            if (!text) return false;
+            const cleanText = text.toLowerCase().replace(/[^a-zçğıöşü0-9]/g, '');
+            const badWords = ['amk', 'oc', 'oç', 'sik', 'siki', 'siktir', 'orospu', 'ananı', 'amini', 'amına', 'piç', 'pic', 'göt', 'got', 'yarrak', 'yarak'];
+            for (let word of badWords) {
+                if (cleanText.includes(word)) return true;
+            }
+            return false;
+        }
+
+        function openEditGroupNameModal() {
+            document.getElementById('newGroupNameInput').value = groupDataCache.name || "";
+            document.getElementById('editGroupNameModalOverlay').classList.add('active');
+        }
+
+        function closeEditGroupNameModal() {
+            document.getElementById('editGroupNameModalOverlay').classList.remove('active');
+        }
+
+        async function saveNewGroupName() {
+            let newName = document.getElementById('newGroupNameInput').value.trim();
+            if (!newName) { showToast("Grup adı boş olamaz!"); return; }
+            if (newName.length < 3) { showToast("Grup adı en az 3 karakter olmalıdır!"); return; }
+            if (containsProfanity(newName)) { showToast("Grup isminde uygunsuz kelime kullanılamaz!"); return; }
+
+            try {
+                await db.ref(`groups/${activeGroupId}`).update({ name: newName, lastNameUpdate: Date.now() });
+                localStorage.setItem('active_group_name', newName);
+                showToast("Grup ismi güncellendi.");
+                closeEditGroupNameModal();
+            } catch (err) {
+                showToast("Hata oluştu.");
+            }
+        }
+
+        function openAuthModal(uid, name) {
+            targetUserIdForAuth = uid;
+            document.getElementById('modalUserNameText').innerText = `${name} için yetki seçin`;
+            document.getElementById('authModalOverlay').classList.add('active');
+        }
+
+        function closeAuthModal() {
+            targetUserIdForAuth = null;
+            document.getElementById('authModalOverlay').classList.remove('active');
+        }
+
+        async function assignRole(roleType) {
+            if (!targetUserIdForAuth || !groupDataCache) return;
+            try {
+                let membersRaw = groupDataCache.members;
+                let members = Array.isArray(membersRaw) ? [...membersRaw] : Object.values(membersRaw);
+
+                members = members.map(m => {
+                    let mUid = typeof m === 'string' ? m : (m.uid || m.id || m.userId);
+                    if (mUid === targetUserIdForAuth) {
+                        if (typeof m === 'string') {
+                            return { uid: mUid, role: roleType };
+                        } else {
+                            m.role = roleType;
+                            return m;
+                        }
+                    }
+                    return typeof m === 'string' ? { uid: m, role: 'member' } : m;
+                });
+
+                await db.ref(`groups/${activeGroupId}`).update({ members: members });
+                showToast("Yetki güncellendi.");
+                closeAuthModal();
+            } catch (err) {
+                showToast("Hata oluştu.");
+            }
+        }
+
+        function openPermissionModal() {
+            document.getElementById('permissionModalOverlay').classList.add('active');
+        }
+
+        function closePermissionModal() {
+            document.getElementById('permissionModalOverlay').classList.remove('active');
+        }
+
+        async function updateChatPermission(permissionVal) {
+            try {
+                await db.ref(`groups/${activeGroupId}`).update({ chatPermission: permissionVal, permission: permissionVal });
+                showToast("Yazma izni güncellendi.");
+                closePermissionModal();
+            } catch (err) {
+                showToast("Hata oluştu.");
+            }
+        }
+
+        function openAddMemberModal() {
+            document.getElementById('userSearchInput').value = "";
+            renderAllUsersSelection("");
+            document.getElementById('addMemberModalOverlay').classList.add('active');
+        }
+
+        function closeAddMemberModal() {
+            document.getElementById('addMemberModalOverlay').classList.remove('active');
+        }
+
+        function filterUsersList(query) {
+            renderAllUsersSelection(query);
+        }
+
+        function renderAllUsersSelection(searchQuery) {
+            const container = document.getElementById('allUsersListContainer');
+            container.innerHTML = "";
+
+            if (!allSystemUsersCache || Object.keys(allSystemUsersCache).length === 0) {
+                container.innerHTML = `<div style="text-align:center; color:#71717a; font-size:12px; padding: 15px;">Kullanıcı bulunamadı.</div>`;
+                return;
+            }
+
+            let membersRaw = groupDataCache.members || [];
+            let currentMemberIds = [];
+            if (Array.isArray(membersRaw)) {
+                currentMemberIds = membersRaw.map(m => typeof m === 'string' ? m : (m.uid || m.id || m.userId));
+            } else if (typeof membersRaw === 'object') {
+                currentMemberIds = Object.values(membersRaw).map(m => typeof m === 'string' ? m : (m.uid || m.id || m.userId));
+            }
+
+            let filteredCount = 0;
+            Object.keys(allSystemUsersCache).forEach(uid => {
+                let userData = allSystemUsersCache[uid];
+                let username = userData.username || "Kullanıcı";
+
+                if (currentMemberIds.includes(uid) || uid === currentUserId) return;
+
+                if (searchQuery && !username.toLowerCase().includes(searchQuery.toLowerCase())) {
+                    return;
+                }
+
+                filteredCount++;
+                let itemDiv = document.createElement('div');
+                itemDiv.className = 'modal-user-item';
+                itemDiv.innerHTML = `
+                    <div style="font-size:11.5px; color:#fff; font-weight:600;">${escapeHtml(username)}</div>
+                    <button class="btn-add-user-item" onclick="sendGroupInvite('${uid}', '${escapeHtml(username)}')">Davet Et</button>
+                `;
+                container.appendChild(itemDiv);
+            });
+
+            if (filteredCount === 0) {
+                container.innerHTML = `<div style="text-align:center; color:#71717a; font-size:12px; padding: 15px;">Eklenebilecek kullanıcı kalmadı.</div>`;
+            }
+        }
+
+        async function sendGroupInvite(invitedUid, invitedName) {
+            try {
+                const notifRef = db.ref(`notifications/${invitedUid}`).push();
+                await notifRef.set({
+                    type: 'invite',
+                    groupId: activeGroupId,
+                    groupName: groupDataCache.name || activeGroupName,
+                    inviterName: currentUserName,
+                    timestamp: Date.now()
+                });
+                showToast(`${invitedName} adlı kullanıcıya davet gönderildi.`);
+            } catch (err) {
+                console.error(err);
+                showToast("Davet gönderilirken hata oluştu.");
+            }
+        }
+
+        function promptRemoveMember(memberId) {
+            userIdToRemove = memberId;
+            document.getElementById('removeModalSubText').innerText = "Kişi gruptan çıkartılıyor...";
+            document.getElementById('removeConfirmModalOverlay').classList.add('active');
+            
+            const confirmBtn = document.getElementById('confirmRemoveBtn');
+            let newBtn = confirmBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
+            
+            newBtn.addEventListener('click', () => {
+                executeRemoveMember(userIdToRemove);
+            });
+        }
+
+        function closeRemoveModal() {
+            userIdToRemove = null;
+            document.getElementById('removeConfirmModalOverlay').classList.remove('active');
+        }
+
+        async function executeRemoveMember(memberId) {
+            try {
+                let membersRaw = groupDataCache.members;
+                let members = Array.isArray(membersRaw) ? membersRaw : Object.values(membersRaw);
+                
+                let updatedMembers = members.filter(m => {
+                    let mUid = typeof m === 'string' ? m : (m.uid || m.id || m.userId);
+                    return mUid !== memberId;
+                });
+
+                // DÜZELTME 2: Üye çıkarma işleminde yanlışlıkla tetiklenen bildirimlerin önüne geçmek için 
+                // veritabanı güncellemesi yapılıyor ve işlem sonlandırılıyor.
+                await db.ref(`groups/${activeGroupId}`).update({ members: updatedMembers });
+                
+                // Mesaj alanında "çıkarıldıktan hemen sonra kullanıcı eklendi" hatasını önlemek amacıyla 
+                // isteğe bağlı sistem mesajı çakışmalarını engellemek için doğrudan güncellenir.
+                showToast("Kullanıcı gruptan çıkarıldı.");
+                closeRemoveModal();
+            } catch (err) {
+                showToast("Hata oluştu.");
+                closeRemoveModal();
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return "";
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return String(text).replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+        function showToast(m) { 
+            const t = document.getElementById('toast'); 
+            t.innerText = m; 
+            t.style.display = 'block'; 
+            setTimeout(() => t.style.display = 'none', 4500); 
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sohbet Arkadaşım - Mesajlar</title>
+    <!-- FontAwesome ikon kütüphanesi -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Yatay ve dikey taşmaları / kaydırma çubuklarını engelle */
+            background-color: #0f0f11;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 400px;
+            height: 100%;
+            max-height: 800px;
+            background-color: #151518;
+            border-radius: 28px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            border: 1px solid #222226;
+            position: relative;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Üst Kısım */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            background: rgba(28, 28, 33, 0.9);
+            backdrop-filter: blur(8px);
+            padding: 12px 15px;
+            border-radius: 18px;
+            border: 1px solid #27272d;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 100;
+        }
+
+        .logo-box-mini {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mini-logo-frame {
+            width: 40px;
+            height: 40px;
+            background: #111113;
+            border: 1.5px solid #ff2a2a;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 10px rgba(255, 42, 42, 0.2);
+            cursor: pointer;
+        }
+
+        .mini-logo-frame svg {
+            width: 16px;
+            height: 16px;
+            fill: #ff2a2a;
+        }
+
+        .brand-title-area h1 {
+            font-size: 15px;
+            color: #ffffff;
+            font-weight: 700;
+            max-width: 220px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .menu-toggle-btn {
+            width: 38px;
+            height: 38px;
+            background: #151518;
+            border: 1px solid #27272d;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .menu-toggle-btn:hover {
+            border-color: #ff2a2a;
+            color: #ff2a2a;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 65px;
+            right: 15px;
+            background: #1c1c21;
+            border: 1px solid #32323d;
+            border-radius: 14px;
+            width: 185px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            display: none;
+            flex-direction: column;
+            padding: 6px;
+            z-index: 200;
+        }
+
+        .dropdown-menu.active {
+            display: flex;
+        }
+
+        .dropdown-item {
+            padding: 10px 12px;
+            font-size: 13px;
+            color: #d4d4d8;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(255, 42, 42, 0.15);
+            color: #ff2a2a;
+        }
+
+        .dropdown-item.danger {
+            color: #ff3b3c;
+        }
+
+        .dropdown-item.danger:hover {
+            background: rgba(255, 59, 60, 0.15);
+        }
+
+        /* Mesaj Listeleme Alanı */
+        .chat-scroll-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 15px;
+            z-index: 10;
+        }
+
+        .chat-scroll-container::-webkit-scrollbar {
+            width: 4px;
+        }
+        .chat-scroll-container::-webkit-scrollbar-thumb {
+            background: #27272d;
+            border-radius: 10px;
+        }
+
+        .message-row {
+            display: flex;
+            flex-direction: column;
+            max-width: 82%;
+            position: relative;
+            margin-top: 6px;
+        }
+
+        .message-row.incoming {
+            align-self: flex-start;
+        }
+
+        .message-row.outgoing {
+            align-self: flex-end;
+        }
+
+        /* Mesaj Balonu Sağ Üst Köşesine Sabitlenmiş Silme Butonu */
+        .message-delete-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #1c1c21;
+            color: #ff3b3c;
+            border: 1px solid #32323d;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.2s;
+            z-index: 20;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+        }
+
+        .message-row:hover .message-delete-btn {
+            opacity: 1;
+        }
+
+        .message-delete-btn:hover {
+            transform: scale(1.15);
+            background: #ff3b3c;
+            color: #ffffff;
+            border-color: #ff3b3c;
+        }
+
+        .system-message-row {
+            align-self: center;
+            max-width: 90%;
+            margin: 6px 0;
+            text-align: center;
+        }
+
+        .system-message-bubble {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            color: #8b8b93;
+            font-size: 11px;
+            padding: 6px 12px;
+            border-radius: 10px;
+            line-height: 1.4;
+            word-break: break-word;
+            font-weight: 500;
+        }
+
+        .message-sender {
+            font-size: 10px;
+            color: #ff2a2a;
+            margin-bottom: 2px;
+            font-weight: 600;
+            padding-left: 4px;
+        }
+
+        .message-bubble {
+            padding: 10px 14px;
+            border-radius: 14px;
+            font-size: 13px;
+            line-height: 1.4;
+            word-break: break-word;
+            position: relative;
+        }
+
+        .incoming .message-bubble {
+            background-color: rgba(28, 28, 33, 0.95);
+            color: #ffffff;
+            border: 1px solid #27272d;
+            border-top-left-radius: 4px;
+        }
+
+        .outgoing .message-bubble {
+            background-color: #ff2a2a;
+            color: #ffffff;
+            border-top-right-radius: 4px;
+            box-shadow: 0 4px 12px rgba(255, 42, 42, 0.3);
+        }
+
+        .message-time {
+            font-size: 9px;
+            color: #888891;
+            margin-top: 3px;
+            align-self: flex-end;
+            padding-right: 2px;
+        }
+
+        /* Hassas İçerik: Sadece Görsel Bulanıklaştırılır, Yazılar Net Kalır */
+        .sensitive-media-wrapper {
+            position: relative;
+            display: inline-block;
+            border-radius: 12px;
+            overflow: hidden;
+            max-width: 220px;
+        }
+
+        .media-content-box {
+            width: 100%;
+            display: block;
+            transition: filter 0.3s ease;
+        }
+
+        .media-content-box.blurred {
+            filter: blur(14px);
+            pointer-events: none;
+        }
+
+        .media-warning-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.45);
+            padding: 10px;
+            text-align: center;
+            z-index: 5;
+            transition: opacity 0.3s ease;
+        }
+
+        .media-warning-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .warning-text-label {
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .reveal-media-btn {
+            background: #ff3b3c;
+            color: #ffffff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+            transition: background 0.2s;
+        }
+
+        .reveal-media-btn:hover {
+            background: #e03233;
+        }
+
+        /* WhatsApp Tarzı Toplu Resim Albüm Çerçevesi */
+        .chat-album-grid {
+            display: grid;
+            gap: 3px;
+            border-radius: 12px;
+            overflow: hidden;
+            width: 200px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .chat-album-grid.count-1 { grid-template-columns: 1fr; }
+        .chat-album-grid.count-2 { grid-template-columns: 1fr 1fr; }
+        .chat-album-grid.count-3 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+        .chat-album-grid.count-3 .album-thumb-item:nth-child(1) { grid-row: span 2; height: 100%; }
+        .chat-album-grid.count-4 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+        .chat-album-grid.count-5, .chat-album-grid.count-6, .chat-album-grid.count-7, .chat-album-grid.count-8, .chat-album-grid.count-9, .chat-album-grid.count-10 { grid-template-columns: repeat(3, 1fr); }
+
+        .album-thumb-item {
+            position: relative;
+            width: 100%;
+            height: 90px;
+            cursor: pointer;
+            overflow: hidden;
+            background: #000;
+        }
+        .chat-album-grid.count-1 .album-thumb-item { height: 160px; }
+        .chat-album-grid.count-2 .album-thumb-item { height: 110px; }
+        .chat-album-grid.count-3 .album-thumb-item { height: 53px; }
+        .chat-album-grid.count-3 .album-thumb-item:nth-child(1) { height: 110px; }
+        .chat-album-grid.count-4 .album-thumb-item { height: 75px; }
+        .chat-album-grid.count-5 .album-thumb-item,
+        .chat-album-grid.count-6 .album-thumb-item,
+        .chat-album-grid.count-7 .album-thumb-item,
+        .chat-album-grid.count-8 .album-thumb-item,
+        .chat-album-grid.count-9 .album-thumb-item,
+        .chat-album-grid.count-10 .album-thumb-item { height: 62px; }
+
+        .album-thumb-item img,
+        .album-thumb-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.2s;
+        }
+        .album-thumb-item:hover img { transform: scale(1.03); }
+        
+        .album-more-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.65);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        /* Tam Ekran Resim / Video Görüntüleyici ve Slider */
+        .image-viewer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .image-viewer-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .image-viewer-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background 0.2s;
+            z-index: 100000;
+        }
+        .image-viewer-nav-btn:hover { background: rgba(255, 255, 255, 0.3); }
+        .image-viewer-nav-btn.prev { left: 20px; }
+        .image-viewer-nav-btn.next { right: 20px; }
+
+        .image-viewer-close-btn {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: background 0.2s;
+            z-index: 100000;
+        }
+        .image-viewer-close-btn:hover { background: rgba(255, 255, 255, 0.3); }
+
+        .image-viewer-content {
+            max-width: 90%;
+            max-height: 85%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        /* Özel Şık Ses Mesajı Oynatıcı */
+        .custom-audio-player {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 8px 12px;
+            border-radius: 12px;
+            min-width: 200px;
+        }
+        .audio-play-btn {
+            width: 32px;
+            height: 32px;
+            background: #ffffff;
+            color: #ff2a2a;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 12px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .audio-track-info {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            gap: 4px;
+        }
+        .audio-progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        .audio-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: #ffffff;
+            border-radius: 2px;
+        }
+        .audio-time-label {
+            font-size: 10px;
+            opacity: 0.85;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Ses Kayıt Paneli */
+        .chat-recording-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            background: rgba(28, 28, 33, 0.95);
+            backdrop-filter: blur(8px);
+            border: 1px solid #ff2a2a;
+            border-radius: 16px;
+            padding: 6px 12px;
+            gap: 10px;
+        }
+        .recording-pulse {
+            width: 12px;
+            height: 12px;
+            background-color: #ff2a2a;
+            border-radius: 50%;
+            animation: pulse-animation 1.5s infinite;
+        }
+        @keyframes pulse-animation {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 42, 42, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(255, 42, 42, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 42, 42, 0); }
+        }
+        .recording-timer {
+            font-size: 13px;
+            font-weight: 600;
+            color: #ffffff;
+            flex-grow: 1;
+        }
+        .btn-cancel-recording {
+            background: transparent;
+            border: none;
+            color: #ff3b3c;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 6px;
+        }
+        .btn-send-recording {
+            background: #ff2a2a;
+            border: none;
+            color: #ffffff;
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .chat-file-preview {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .chat-file-preview i.file-icon {
+            font-size: 22px;
+            color: #ff2a2a;
+        }
+        .chat-file-info {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex-grow: 1;
+        }
+        .chat-file-name {
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 130px;
+        }
+        .chat-file-size {
+            font-size: 9px;
+            opacity: 0.7;
+        }
+        .chat-file-download-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        .chat-file-download-btn:hover { background: #ff2a2a; }
+
+        /* Mesaj Giriş Alanı */
+        .chat-input-container {
+            display: flex;
+            align-items: center;
+            background: rgba(28, 28, 33, 0.9);
+            backdrop-filter: blur(8px);
+            border: 1px solid #27272d;
+            border-radius: 16px;
+            padding: 6px 10px;
+            gap: 8px;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .chat-input {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            padding: 6px;
+        }
+
+        .btn-action-icon {
+            width: 36px;
+            height: 36px;
+            background: #151518;
+            color: #a1a1aa;
+            border: 1px solid #27272d;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        .btn-action-icon:hover {
+            color: #ff2a2a;
+            border-color: #ff2a2a;
+        }
+
+        .btn-send {
+            width: 40px;
+            height: 40px;
+            background-color: #ff2a2a;
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 42, 42, 0.4);
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        .btn-send:hover { background-color: #e60000; transform: scale(1.05); }
+        .btn-send svg { width: 16px; height: 16px; fill: #ffffff; }
+
+        .chat-restricted-warning {
+            background: #1c1c21;
+            border: 1px solid #27272d;
+            border-radius: 16px;
+            padding: 12px;
+            text-align: center;
+            font-size: 12px;
+            color: #ff2a2a;
+            font-weight: 600;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        /* Modal Pencereler */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-box {
+            background: #18181c;
+            border: 1px solid #2e2e38;
+            border-radius: 22px;
+            width: 85%;
+            max-width: 320px;
+            padding: 22px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            transform: scale(0.9);
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .modal-overlay.active .modal-box { transform: scale(1); }
+        .modal-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 59, 60, 0.15);
+            color: #ff3b3c;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            margin: 0 auto 15px auto;
+        }
+        .modal-title { font-size: 16px; font-weight: 700; color: #ffffff; margin-bottom: 8px; }
+        .modal-desc { font-size: 13px; color: #a1a1aa; margin-bottom: 20px; line-height: 1.4; }
+        .modal-buttons { display: flex; gap: 10px; }
+        .modal-btn {
+            flex: 1; padding: 11px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; border: none;
+        }
+        .modal-btn.cancel { background: #27272d; color: #ffffff; }
+        .modal-btn.confirm { background: #ff3b3c; color: #ffffff; }
+
+        #toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff3b3c;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            z-index: 10000;
+            display: none;
+            box-shadow: 0 4px 15px rgba(255,59,60,0.4);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="toast"></div>
+
+    <!-- Tam Ekran Medya Slider / Görüntüleyici -->
+    <div class="image-viewer-overlay" id="imageViewOverlay">
+        <button class="image-viewer-close-btn" id="imageViewCloseBtn" title="Kapat">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <button class="image-viewer-nav-btn prev" id="imageViewPrevBtn" title="Önceki Medya">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <div id="imageViewContainer" style="display:flex; justify-content:center; align-items:center; max-width:90%; max-height:85%;">
+            <img class="image-viewer-content" id="imageViewImage" src="" alt="Tam Ekran Resim" style="display:none;">
+            <video class="image-viewer-content" id="imageViewVideo" controls autoplay style="display:none; max-width:100%; max-height:85vh;"></video>
+        </div>
+        <button class="image-viewer-nav-btn next" id="imageViewNextBtn" title="Sonraki Medya">
+            <i class="fa-solid fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- Gruptan Çıkma Modalı -->
+    <div class="modal-overlay" id="leaveModal">
+        <div class="modal-box">
+            <div class="modal-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <div class="modal-title">Gruptan Çıkılıyor</div>
+            <div class="modal-desc">Bu gruptan ayrılmak istediğinize emin misiniz?</div>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" id="modalCancelBtn">Vazgeç</button>
+                <button class="modal-btn confirm" id="modalConfirmBtn">Evet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Duvar Kağıdı Modalı -->
+    <div class="modal-overlay" id="wallpaperModal">
+        <div class="modal-box">
+            <div class="modal-icon" style="background: rgba(255, 42, 42, 0.15); color: #ff2a2a;"><i class="fa-solid fa-image"></i></div>
+            <div class="modal-title">Duvar Kağıdı Uygula</div>
+            <div class="modal-desc">Seçtiğiniz resmi nerede uygulamak istersiniz?</div>
+            <div class="modal-buttons" style="flex-direction: column; gap: 8px;">
+                <button class="modal-btn confirm" id="wallpaperThisChatBtn" style="background: #ff2a2a;">Sadece Bu Sohbet</button>
+                <button class="modal-btn confirm" id="wallpaperAllChatsBtn" style="background: #27272d; color: #ffffff;">Tüm Sohbetler</button>
+                <button class="modal-btn cancel" id="wallpaperCancelBtn">Vazgeç</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container" id="appContainer">
+        <input type="file" id="wallpaperFileInput" style="display: none;" accept="image/*">
+
+        <div class="top-header">
+            <div class="logo-box-mini" onclick="goBackToGroups()" title="Gruplara Dön">
+                <div class="mini-logo-frame">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="brand-title-area">
+                <h1 id="group-title-display">Grup Yükleniyor...</h1>
+            </div>
+            <button class="menu-toggle-btn" id="menuToggleBtn" type="button"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+
+            <div class="dropdown-menu" id="dropdownMenu">
+                <div class="dropdown-item" id="menuGroupSettings"><i class="fa-solid fa-gear"></i> Grup Ayar</div>
+                <div class="dropdown-item" id="menuWallpaper"><i class="fa-solid fa-image"></i> Duvar Kağıdı</div>
+                <div class="dropdown-item" id="menuToggleNotifications"><i class="fa-solid fa-bell"></i> Bildirimleri Aç</div>
+                <div class="dropdown-item danger" id="menuLeaveGroup"><i class="fa-solid fa-right-from-bracket"></i> Gruptan Çık</div>
+            </div>
+        </div>
+
+        <div class="chat-scroll-container" id="chatContainer">
+            <div style="text-align:center; color:#71717a; font-size:13px; margin-top:20px;">Mesajlar yükleniyor...</div>
+        </div>
+
+        <div id="bottomAreaWrapper">
+            <div class="chat-input-container" id="chatInputContainer">
+                <input type="file" id="fileInput" style="display: none;" accept="image/*,video/*,.pdf,.doc,.docx,.txt" multiple>
+                <button class="btn-action-icon" id="attachFileBtn" title="Dosya / Resim / Video Gönder" type="button">
+                    <i class="fa-solid fa-paperclip"></i>
+                </button>
+                <input type="text" id="messageInput" class="chat-input" placeholder="Mesaj yazın...">
+                <button class="btn-action-icon" id="recordAudioBtn" title="Ses Kaydı Gönder" type="button">
+                    <i class="fa-solid fa-microphone"></i>
+                </button>
+                <button class="btn-send" id="sendMessageBtn" type="button">
+                    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK'ları -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCoDVcOFPZkaCUr-ac1GsuAkxm8nNgzL3M",
+            authDomain: "sohbet-arkadasim-b1402.firebaseapp.com",
+            projectId: "sohbet-arkadasim-b1402",
+            storageBucket: "sohbet-arkadasim-b1402.firebasestorage.app",
+            messagingSenderId: "345189828948",
+            appId: "1:345189828948:web:60b6d774230559956c60c1",
+            measurementId: "G-0ZTJJXFX87"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        let currentUserId = localStorage.getItem('gizliChatID');
+        let currentUserName = localStorage.getItem('chat_user_name') || "Misafir";
+        let activeGroupId = localStorage.getItem('active_group_id');
+        let activeGroupName = localStorage.getItem('active_group_name') || "Sohbet Grubu";
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const joinGroupCode = urlParams.get('joinGroup');
+        if (joinGroupCode) {
+            activeGroupId = joinGroupCode;
+            localStorage.setItem('active_group_id', joinGroupCode);
+        }
+
+        document.getElementById('group-title-display').innerText = activeGroupName;
+        applySavedWallpaper();
+
+        if (!activeGroupId) {
+            showToast("Aktif grup bulunamadı! Gruplara yönlendiriliyorsunuz.");
+            setTimeout(() => { window.location.href = "Gruplar.html"; }, 1500);
+        }
+
+        auth.signInAnonymously().catch((error) => { console.error("Anonim giriş hatası:", error); });
+
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUserId = user.uid;
+                localStorage.setItem('gizliChatID', user.uid);
+                try {
+                    const userSnap = await db.ref(`users/${user.uid}`).once('value');
+                    if (userSnap.exists() && userSnap.val().username) {
+                        currentUserName = userSnap.val().username;
+                        localStorage.setItem('chat_user_name', currentUserName);
+                    }
+                } catch (e) { console.error(e); }
+            } else if (!currentUserId) {
+                currentUserId = "guest_" + Math.random().toString(36).substring(2, 9);
+            }
+            checkGroupAndPermissions();
+            loadMessages();
+            updateNotificationMenuLabel();
+        });
+
+        document.addEventListener("DOMContentLoaded", () => { initChatInputs(); });
+        setTimeout(initChatInputs, 100);
+
+        const menuToggleBtn = document.getElementById('menuToggleBtn');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        const leaveModal = document.getElementById('leaveModal');
+        const wallpaperModal = document.getElementById('wallpaperModal');
+        const wallpaperFileInput = document.getElementById('wallpaperFileInput');
+        let tempWallpaperBase64 = "";
+
+        const imageViewOverlay = document.getElementById('imageViewOverlay');
+        const imageViewImage = document.getElementById('imageViewImage');
+        const imageViewVideo = document.getElementById('imageViewVideo');
+        const imageViewCloseBtn = document.getElementById('imageViewCloseBtn');
+        const imageViewPrevBtn = document.getElementById('imageViewPrevBtn');
+        const imageViewNextBtn = document.getElementById('imageViewNextBtn');
+
+        imageViewCloseBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            imageViewVideo.pause();
+            imageViewOverlay.classList.remove('active');
+        });
+
+        imageViewOverlay.addEventListener('click', (e) => {
+            if (e.target === imageViewOverlay) {
+                imageViewVideo.pause();
+                imageViewOverlay.classList.remove('active');
+            }
+        });
+
+        // Tarayıcı Bildirimleri İzni ve Yönetimi
+        const toggleNotifItem = document.getElementById('menuToggleNotifications');
+        
+        function updateNotificationMenuLabel() {
+            if (!toggleNotifItem) return;
+            if (window.Notification && Notification.permission === "granted") {
+                toggleNotifItem.innerHTML = `<i class="fa-solid fa-bell" style="color: #4ade80;"></i> Bildirimler Açık`;
+            } else {
+                toggleNotifItem.innerHTML = `<i class="fa-solid fa-bell-slash"></i> Bildirimleri Aç`;
+            }
+        }
+
+        if (toggleNotifItem) {
+            toggleNotifItem.addEventListener('pointerdown', async (e) => {
+                e.preventDefault();
+                dropdownMenu.classList.remove('active');
+                if (!window.Notification) {
+                    showToast("Tarayıcınız bildirimleri desteklemiyor.");
+                    return;
+                }
+                if (Notification.permission === "granted") {
+                    showToast("Bildirimler zaten etkinleştirilmiş.");
+                } else {
+                    const permission = await Notification.requestPermission();
+                    if (permission === "granted") {
+                        showToast("Bildirim izni başarıyla verildi!");
+                        new Notification("Sohbet Arkadaşım", { body: "Bildirimler başarıyla açıldı!" });
+                    } else {
+                        showToast("Bildirim izni reddedildi.");
+                    }
+                    updateNotificationMenuLabel();
+                }
+            });
+        }
+
+        function triggerBrowserNotification(senderName, messageText) {
+            if (!window.Notification || Notification.permission !== "granted") return;
+            // Kendi gönderdiğimiz mesajlarda bildirim gösterme
+            if (senderName === currentUserName) return;
+
+            const title = `${activeGroupName}`;
+            const body = `${senderName}: ${messageText}`;
+            try {
+                const notif = new Notification(title, {
+                    body: body,
+                    icon: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/svgs/solid/comments.svg"
+                });
+                notif.onclick = function() {
+                    window.focus();
+                    notif.close();
+                };
+            } catch (err) {
+                console.error("Bildirim gönderilemedi:", err);
+            }
+        }
+
+        // Çoklu Medya Albüm Slider Kayıtları
+        const galleryRegistry = {};
+        let currentGalleryMedia = [];
+        let currentGalleryIndex = 0;
+
+        function openAlbumGallery(galleryId, idx) {
+            const mediaList = galleryRegistry[galleryId];
+            if (!mediaList || mediaList.length === 0) return;
+            currentGalleryMedia = mediaList;
+            currentGalleryIndex = idx || 0;
+            toggleGalleryNavButtons();
+            updateGalleryView();
+            imageViewOverlay.classList.add('active');
+        }
+
+        function updateGalleryView() {
+            if (currentGalleryMedia.length === 0) return;
+            const item = currentGalleryMedia[currentGalleryIndex];
+            const dataUrl = (item && item.data) ? item.data : item;
+            const isVid = (item && item.type && item.type.startsWith('video')) || (typeof dataUrl === 'string' && dataUrl.startsWith('data:video'));
+
+            imageViewImage.style.display = 'none';
+            imageViewVideo.style.display = 'none';
+            imageViewVideo.pause();
+
+            if (isVid) {
+                imageViewVideo.src = dataUrl;
+                imageViewVideo.style.display = 'block';
+            } else {
+                imageViewImage.src = dataUrl;
+                imageViewImage.style.display = 'block';
+            }
+        }
+
+        function toggleGalleryNavButtons() {
+            const hasMultiple = currentGalleryMedia.length > 1;
+            imageViewPrevBtn.style.display = hasMultiple ? 'flex' : 'none';
+            imageViewNextBtn.style.display = hasMultiple ? 'flex' : 'none';
+        }
+
+        function stepGallery(delta) {
+            if (currentGalleryMedia.length <= 1) return;
+            imageViewVideo.pause();
+            currentGalleryIndex = (currentGalleryIndex + delta + currentGalleryMedia.length) % currentGalleryMedia.length;
+            updateGalleryView();
+        }
+
+        imageViewPrevBtn.addEventListener('click', (e) => { e.stopPropagation(); stepGallery(-1); });
+        imageViewNextBtn.addEventListener('click', (e) => { e.stopPropagation(); stepGallery(1); });
+
+        document.addEventListener('keydown', (e) => {
+            if (!imageViewOverlay.classList.contains('active')) return;
+            if (e.key === 'Escape') { imageViewVideo.pause(); imageViewOverlay.classList.remove('active'); }
+            if (e.key === 'ArrowLeft') stepGallery(-1);
+            if (e.key === 'ArrowRight') stepGallery(1);
+        });
+
+        menuToggleBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); e.preventDefault(); dropdownMenu.classList.toggle('active'); });
+        document.addEventListener('pointerdown', (e) => {
+            if (!dropdownMenu.contains(e.target) && e.target !== menuToggleBtn && !menuToggleBtn.contains(e.target)) {
+                dropdownMenu.classList.remove('active');
+            }
+        });
+
+        document.getElementById('menuGroupSettings').addEventListener('pointerdown', (e) => {
+            e.preventDefault(); dropdownMenu.classList.remove('active'); window.location.replace("Grup_Ayarlar.html");
+        });
+        document.getElementById('menuWallpaper').addEventListener('pointerdown', (e) => {
+            e.preventDefault(); dropdownMenu.classList.remove('active'); wallpaperFileInput.click();
+        });
+
+        wallpaperFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) { showToast("Duvar kağıdı boyutu 5MB'dan küçük olmalıdır!"); wallpaperFileInput.value = ""; return; }
+            const reader = new FileReader();
+            reader.onload = function(uploadEvent) {
+                tempWallpaperBase64 = uploadEvent.target.result;
+                wallpaperModal.classList.add('active');
+                wallpaperFileInput.value = "";
+            };
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('wallpaperCancelBtn').addEventListener('click', () => { wallpaperModal.classList.remove('active'); tempWallpaperBase64 = ""; });
+        document.getElementById('wallpaperThisChatBtn').addEventListener('click', () => {
+            if (tempWallpaperBase64 && activeGroupId) {
+                localStorage.setItem(`wallpaper_group_${activeGroupId}`, tempWallpaperBase64);
+                applySavedWallpaper();
+                showToast("Duvar kağıdı bu sohbete uygulandı.");
+            }
+            wallpaperModal.classList.remove('active'); tempWallpaperBase64 = "";
+        });
+        document.getElementById('wallpaperAllChatsBtn').addEventListener('click', () => {
+            if (tempWallpaperBase64) {
+                localStorage.setItem('wallpaper_global_all', tempWallpaperBase64);
+                if (activeGroupId) localStorage.removeItem(`wallpaper_group_${activeGroupId}`);
+                applySavedWallpaper();
+                showToast("Duvar kağıdı tüm sohbetlere uygulandı.");
+            }
+            wallpaperModal.classList.remove('active'); tempWallpaperBase64 = "";
+        });
+
+        function applySavedWallpaper() {
+            const appContainer = document.getElementById('appContainer');
+            let savedBg = activeGroupId ? localStorage.getItem(`wallpaper_group_${activeGroupId}`) : null;
+            if (!savedBg) savedBg = localStorage.getItem('wallpaper_global_all');
+            appContainer.style.backgroundImage = savedBg ? `url('${savedBg}')` : 'none';
+        }
+
+        document.getElementById('menuLeaveGroup').addEventListener('pointerdown', (e) => {
+            e.preventDefault(); dropdownMenu.classList.remove('active'); leaveModal.classList.add('active');
+        });
+        document.getElementById('modalCancelBtn').addEventListener('click', () => { leaveModal.classList.remove('active'); });
+        document.getElementById('modalConfirmBtn').addEventListener('click', async () => {
+            leaveModal.classList.remove('active');
+            try {
+                const groupRef = db.ref(`groups/${activeGroupId}`);
+                const snapshot = await groupRef.once('value');
+                if (snapshot.exists()) {
+                    let groupData = snapshot.val();
+                    let members = groupData.members || [];
+                    if (Array.isArray(members)) {
+                        members = members.filter(m => (typeof m === 'string' ? m !== currentUserId : (m.uid !== currentUserId && m.id !== currentUserId)));
+                    }
+                    await groupRef.update({ members: members });
+                    await addSystemMessage(`${currentUserName} gruptan ayrıldı.`);
+                }
+                showToast("Gruptan ayrıldınız.");
+                setTimeout(() => { goBackToGroups(); }, 1000);
+            } catch (err) { showToast("Gruptan çıkılırken hata oluştu."); }
+        });
+
+        function goBackToGroups() { window.location.replace("Gruplar.html"); }
+
+        let groupPermission = "everyone";
+        let groupCreatorId = "";
+        let groupMembersList = [];
+        let groupRefListener = null;
+        let lastCanWriteState = null;
+
+        function checkGroupAndPermissions() {
+            if (!activeGroupId) return;
+            groupRefListener = db.ref(`groups/${activeGroupId}`);
+            groupRefListener.on('value', async (snapshot) => {
+                if (!snapshot.exists()) {
+                    showToast("Grup bulunamadı veya silinmiş.");
+                    setTimeout(() => { window.location.href = "Gruplar.html"; }, 1500);
+                    return;
+                }
+                const groupData = snapshot.val();
+                groupPermission = groupData.chatPermission || groupData.permission || "everyone";
+                groupCreatorId = groupData.createdBy || groupData.creator || "";
+                let membersRaw = groupData.members;
+                groupMembersList = Array.isArray(membersRaw) ? membersRaw.filter(m => m !== null) : (membersRaw ? Object.values(membersRaw) : []);
+
+                if (groupData.name) {
+                    document.getElementById('group-title-display').innerText = groupData.name;
+                    localStorage.setItem('active_group_name', groupData.name);
+                    activeGroupName = groupData.name;
+                }
+                evaluateWritingPermission();
+            });
+        }
+
+        function evaluateWritingPermission() {
+            const bottomWrapper = document.getElementById('bottomAreaWrapper');
+            let canWrite = true;
+            let warningText = "";
+            let currentUserMemberObj = groupMembersList.find(m => (typeof m === 'string' ? m : (m.uid || m.id || m.userId)) === currentUserId);
+            let userRole = (currentUserMemberObj && typeof currentUserMemberObj === 'object') ? currentUserMemberObj.role || "member" : "member";
+            let isAdmin = (userRole === 'moderator' || userRole === 'sv1' || currentUserId === groupCreatorId);
+
+            if ((groupPermission === "admin_only" || groupPermission === "creator") && !isAdmin) {
+                canWrite = false;
+                warningText = "Bu gruba sadece kurucu ve yöneticiler yazı yazabilir.";
+            }
+
+            if (lastCanWriteState !== canWrite || !document.getElementById('chatInputContainer')) {
+                lastCanWriteState = canWrite;
+                if (canWrite) {
+                    bottomWrapper.innerHTML = `
+                        <div class="chat-input-container" id="chatInputContainer">
+                            <input type="file" id="fileInput" style="display: none;" accept="image/*,video/*,.pdf,.doc,.docx,.txt" multiple>
+                            <button class="btn-action-icon" id="attachFileBtn" title="Dosya / Resim / Video Gönder" type="button"><i class="fa-solid fa-paperclip"></i></button>
+                            <input type="text" id="messageInput" class="chat-input" placeholder="Mesaj yazın...">
+                            <button class="btn-action-icon" id="recordAudioBtn" title="Ses Kaydı Gönder" type="button"><i class="fa-solid fa-microphone"></i></button>
+                            <button class="btn-send" id="sendMessageBtn" type="button">
+                                <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    bottomWrapper.innerHTML = `<div class="chat-restricted-warning"><i class="fa-solid fa-lock" style="margin-right: 6px;"></i> ${warningText}</div>`;
+                }
+                initChatInputs();
+            }
+        }
+
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let recordingTimerInterval = null;
+        let recordingSeconds = 0;
+        let activeMediaStream = null;
+        let isCancelledExplicitly = false;
+
+        function initChatInputs() {
+            const sendBtn = document.getElementById('sendMessageBtn');
+            const msgInput = document.getElementById('messageInput');
+            const attachBtn = document.getElementById('attachFileBtn');
+            const fileInput = document.getElementById('fileInput');
+            const recordAudioBtn = document.getElementById('recordAudioBtn');
+
+            if (sendBtn) sendBtn.onclick = (e) => { e.preventDefault(); sendMessage(); };
+            if (msgInput) msgInput.onkeypress = (e) => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } };
+            
+            if (attachBtn && fileInput) {
+                attachBtn.onclick = (e) => { e.preventDefault(); fileInput.click(); };
+                fileInput.onchange = (e) => {
+                    const files = Array.from(e.target.files || []);
+                    if (files.length === 0) return;
+
+                    if (files.length > 10) {
+                        showToast("Tek seferde en fazla 10 resim/dosya seçebilirsiniz!");
+                        fileInput.value = "";
+                        return;
+                    }
+
+                    let mediaFiles = files.filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'));
+                    if (mediaFiles.length > 1 && mediaFiles.length === files.length) {
+                        let processedCount = 0;
+                        let albumItems = [];
+                        files.forEach((file, index) => {
+                            const reader = new FileReader();
+                            reader.onload = (ev) => {
+                                albumItems[index] = { data: ev.target.result, type: file.type, name: file.name, size: file.size };
+                                processedCount++;
+                                if (processedCount === files.length) {
+                                    sendAlbumMedia(albumItems);
+                                }
+                            };
+                            reader.readAsDataURL(file);
+                        });
+                        fileInput.value = "";
+                        return;
+                    }
+
+                    files.forEach(file => {
+                        if (file.size > 15 * 1024 * 1024) { showToast(file.name + " 15MB'dan büyük!"); return; }
+                        const reader = new FileReader();
+                        reader.onload = (ev) => {
+                            const base64Data = ev.target.result;
+                            if (file.type.startsWith('image/')) {
+                                sendSingleMedia(file.name, file.size, file.type, base64Data, 'image');
+                            } else if (file.type.startsWith('video/')) {
+                                sendSingleMedia(file.name, file.size, file.type, base64Data, 'video');
+                            } else {
+                                sendFileMessage(file.name, file.size, file.type, base64Data);
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                    fileInput.value = "";
+                };
+            }
+
+            if (recordAudioBtn) recordAudioBtn.onclick = (e) => { e.preventDefault(); startAudioRecording(); };
+        }
+
+        async function startAudioRecording() {
+            try {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { showToast("Ses kaydı desteklenmiyor!"); return; }
+                activeMediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(activeMediaStream);
+                audioChunks = [];
+                isCancelledExplicitly = false;
+
+                mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunks.push(e.data); };
+                mediaRecorder.onstop = async () => {
+                    if (activeMediaStream) { activeMediaStream.getTracks().forEach(t => t.stop()); activeMediaStream = null; }
+                    if (isCancelledExplicitly || audioChunks.length === 0) return;
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const reader = new FileReader();
+                    reader.onload = (e) => sendAudioMessage(e.target.result);
+                    reader.readAsDataURL(audioBlob);
+                };
+
+                mediaRecorder.start();
+                showRecordingUI();
+            } catch (err) { showToast("Mikrofon izni alınamadı!"); }
+        }
+
+        function showRecordingUI() {
+            const container = document.getElementById('chatInputContainer');
+            if (!container) return;
+            recordingSeconds = 0;
+            container.innerHTML = `
+                <div class="chat-recording-container">
+                    <div class="recording-pulse"></div>
+                    <div class="recording-timer" id="recordingTimerDisplay">00:00</div>
+                    <button class="btn-cancel-recording" id="cancelRecordingBtn" type="button"><i class="fa-solid fa-trash"></i></button>
+                    <button class="btn-send-recording" id="confirmRecordingBtn" type="button"><i class="fa-solid fa-check"></i></button>
+                </div>
+            `;
+            recordingTimerInterval = setInterval(() => {
+                recordingSeconds++;
+                let mins = Math.floor(recordingSeconds / 60).toString().padStart(2, '0');
+                let secs = (recordingSeconds % 60).toString().padStart(2, '0');
+                const display = document.getElementById('recordingTimerDisplay');
+                if (display) display.innerText = `${mins}:${secs}`;
+                if (recordingSeconds >= 180) stopRecordingProcess(true);
+            }, 1000);
+
+            document.getElementById('cancelRecordingBtn').onclick = (e) => { e.preventDefault(); stopRecordingProcess(false); };
+            document.getElementById('confirmRecordingBtn').onclick = (e) => { e.preventDefault(); stopRecordingProcess(true); };
+        }
+
+        function stopRecordingProcess(shouldSend) {
+            clearInterval(recordingTimerInterval);
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                isCancelledExplicitly = !shouldSend;
+                mediaRecorder.stop();
+            }
+            setTimeout(() => { lastCanWriteState = null; evaluateWritingPermission(); }, 150);
+        }
+
+        async function sendAudioMessage(base64Audio) {
+            try {
+                const ref = db.ref(`group_messages/${activeGroupId}`).push();
+                await ref.set({ senderId: currentUserId, senderName: currentUserName, text: "🎤 Sesli Mesaj", fileData: base64Audio, timestamp: Date.now(), type: 'audio' });
+                await db.ref(`groups/${activeGroupId}`).update({ lastMessage: `${currentUserName}: 🎤 [Sesli Mesaj]` });
+            } catch (e) { showToast("Ses gönderilemedi."); }
+        }
+
+        let isInitialLoad = true;
+
+        function loadMessages() {
+            if (!activeGroupId) return;
+            const messagesRef = db.ref(`group_messages/${activeGroupId}`);
+
+            // child_added ile anlık gelen yeni mesajları yakalayıp bildirim üretiyoruz
+            messagesRef.on('child_added', (childSnap) => {
+                if (isInitialLoad) return; // Sayfa açılışındaki eski mesajlar için bildirim atmasın
+                const msgData = childSnap.val();
+                if (msgData && msgData.type && msgData.type !== 'system' && msgData.senderId !== currentUserId) {
+                    let textSummary = msgData.text || "Yeni bir medya/dosya gönderildi.";
+                    triggerBrowserNotification(msgData.senderName || "Biri", textSummary);
+                }
+            });
+
+            messagesRef.on('value', (snapshot) => {
+                const chatContainer = document.getElementById('chatContainer');
+                if (!chatContainer) return;
+                chatContainer.innerHTML = "";
+                for (const k in galleryRegistry) delete galleryRegistry[k];
+
+                if (!snapshot.exists()) {
+                    chatContainer.innerHTML = `<div style="text-align:center; color:#71717a; font-size:13px; margin-top:20px;">Bu grupta henüz mesaj yok.</div>`;
+                    isInitialLoad = false;
+                    return;
+                }
+
+                snapshot.forEach((childSnap) => {
+                    const msgKey = childSnap.key;
+                    const msgData = childSnap.val();
+                    const messageRow = document.createElement('div');
+
+                    if (msgData.type === 'system') {
+                        messageRow.className = `system-message-row`;
+                        messageRow.innerHTML = `<div class="system-message-bubble">${escapeHtml(msgData.text)}</div>`;
+                    } else {
+                        const isOutgoing = (msgData.senderId === currentUserId);
+                        messageRow.className = `message-row ${isOutgoing ? 'outgoing' : 'incoming'}`;
+
+                        let senderHtml = !isOutgoing ? `<div class="message-sender">${escapeHtml(msgData.senderName)}</div>` : "";
+                        let deleteBtnHtml = `<button class="message-delete-btn" onclick="deleteMessage('${msgKey}')" title="Mesajı Sil"><i class="fa-solid fa-trash"></i></button>`;
+
+                        let contentHtml = "";
+                        if (msgData.type === 'deleted') {
+                            contentHtml = `<div class="message-bubble" style="font-style:italic; opacity:0.6; color:#a1a1aa;"><i class="fa-solid fa-ban" style="margin-right:5px;"></i> ${escapeHtml(msgData.text)}</div>`;
+                        } else if (msgData.type === 'image' || msgData.type === 'video' || msgData.type === 'album') {
+                            const mediaId = 'media_' + Math.random().toString(36).substring(2, 9);
+                            let mediaList = [];
+
+                            if (msgData.type === 'album' && Array.isArray(msgData.albumFiles)) {
+                                mediaList = msgData.albumFiles;
+                            } else {
+                                mediaList = [{ data: msgData.fileData, type: msgData.fileType || 'image/jpeg' }];
+                            }
+                            galleryRegistry[mediaId] = mediaList;
+
+                            let countClass = `count-${mediaList.length}`;
+                            let thumbsHtml = "";
+                            mediaList.forEach((m, idx) => {
+                                let isVid = m.type && m.type.startsWith('video');
+                                let innerContent = isVid ? `<video src="${m.data}" style="width:100%; height:100%; object-fit:cover;"></video>` : `<img src="${m.data}" alt="Medya">`;
+                                
+                                if (idx === 3 && mediaList.length > 4) {
+                                    thumbsHtml += `
+                                        <div class="album-thumb-item" onclick="openAlbumGallery('${mediaId}', ${idx})">
+                                            ${innerContent}
+                                            <div class="album-more-overlay">+${mediaList.length - 4}</div>
+                                        </div>
+                                    `;
+                                } else {
+                                    thumbsHtml += `
+                                        <div class="album-thumb-item" onclick="openAlbumGallery('${mediaId}', ${idx})">
+                                            ${innerContent}
+                                        </div>
+                                    `;
+                                }
+                            });
+
+                            // Sadece görsel bulanıklaştırılır, yazı ve buton net kalır
+                            contentHtml = `
+                                <div class="sensitive-media-wrapper">
+                                    <div class="media-warning-overlay" id="warn_wrap_${msgKey}">
+                                        <div class="warning-text-label"><i class="fa-solid fa-triangle-exclamation"></i> Hassas İçerik</div>
+                                        <button class="reveal-media-btn" onclick="revealMedia('${msgKey}')">İçeriği Göster</button>
+                                    </div>
+                                    <div class="media-content-box blurred" id="actual_media_${msgKey}">
+                                        <div class="chat-album-grid ${countClass}" onclick="openAlbumGallery('${mediaId}', 0)" style="cursor:pointer;">
+                                            ${thumbsHtml}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        } else if (msgData.type === 'audio') {
+                            const audioId = 'audio_' + Math.random().toString(36).substring(2, 9);
+                            contentHtml = `
+                                <div class="custom-audio-player">
+                                    <audio id="${audioId}" src="${msgData.fileData}" preload="metadata"></audio>
+                                    <button class="audio-play-btn" onclick="toggleCustomAudio('${audioId}', this)"><i class="fa-solid fa-play"></i></button>
+                                    <div class="audio-track-info">
+                                        <div class="audio-progress-bar" onclick="seekAudio(event, '${audioId}')"><div class="audio-progress-fill" id="fill_${audioId}"></div></div>
+                                        <div class="audio-time-label"><span id="current_${audioId}">00:00</span><span id="duration_${audioId}">00:00</span></div>
+                                    </div>
+                                </div>
+                            `;
+                        } else if (msgData.type === 'file') {
+                            contentHtml = `
+                                <div class="chat-file-preview">
+                                    <i class="fa-solid fa-file-lines file-icon"></i>
+                                    <div class="chat-file-info">
+                                        <span class="chat-file-name">${escapeHtml(msgData.fileName)}</span>
+                                        <span class="chat-file-size">${formatBytes(msgData.fileSize)}</span>
+                                    </div>
+                                    <button class="chat-file-download-btn" onclick="downloadFile('${msgData.fileData}', '${msgData.fileName}')"><i class="fa-solid fa-download"></i></button>
+                                </div>
+                            `;
+                        } else {
+                            contentHtml = `<div class="message-bubble">${escapeHtml(msgData.text)}</div>`;
+                        }
+
+                        let timeStr = msgData.timestamp ? new Date(msgData.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
+                        
+                        if (msgData.type === 'image' || msgData.type === 'video' || msgData.type === 'album') {
+                            messageRow.innerHTML = `
+                                ${deleteBtnHtml}
+                                ${senderHtml}
+                                ${contentHtml}
+                                <div class="message-time" style="padding-top:4px;">${timeStr}</div>
+                            `;
+                        } else {
+                            messageRow.innerHTML = `
+                                ${deleteBtnHtml}
+                                ${senderHtml}
+                                <div class="${msgData.type === 'deleted' ? '' : 'message-bubble'}">${contentHtml}</div>
+                                <div class="message-time">${timeStr}</div>
+                            `;
+                        }
+                    }
+                    chatContainer.appendChild(messageRow);
+                });
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                isInitialLoad = false;
+            });
+        }
+
+        function revealMedia(msgKey) {
+            const warnWrap = document.getElementById(`warn_wrap_${msgKey}`);
+            const actualMedia = document.getElementById(`actual_media_${msgKey}`);
+            if (warnWrap) warnWrap.classList.add('hidden');
+            if (actualMedia) actualMedia.classList.remove('blurred');
+        }
+
+        // Silme butonuna basınca direkt içerik temizlenir
+        async function deleteMessage(msgKey) {
+            try {
+                const msgRef = db.ref(`group_messages/${activeGroupId}/${msgKey}`);
+                const snap = await msgRef.once('value');
+                if (!snap.exists()) return;
+                const data = snap.val();
+                
+                let deletedText = "Mesaj silindi.";
+                if (data.type === 'image' || data.type === 'album') {
+                    deletedText = "Resim silindi.";
+                } else if (data.type === 'video') {
+                    deletedText = "Video silindi.";
+                } else if (data.type === 'audio') {
+                    deletedText = "Ses kaydı silindi.";
+                }
+
+                await msgRef.update({
+                    type: 'deleted',
+                    text: deletedText,
+                    fileData: null,
+                    albumFiles: null,
+                    fileName: null
+                });
+                showToast(deletedText);
+            } catch (err) {
+                showToast("Silinirken hata oluştu.");
+            }
+        }
+
+        function toggleCustomAudio(audioId, btnEl) {
+            const audio = document.getElementById(audioId);
+            const fillEl = document.getElementById(`fill_${audioId}`);
+            const currentEl = document.getElementById(`current_${audioId}`);
+            const durationEl = document.getElementById(`duration_${audioId}`);
+            if (!audio) return;
+            if (!isNaN(audio.duration)) durationEl.innerText = formatAudioTime(audio.duration);
+
+            if (audio.paused) {
+                audio.play().then(() => { btnEl.innerHTML = `<i class="fa-solid fa-pause"></i>`; });
+            } else {
+                audio.pause();
+                btnEl.innerHTML = `<i class="fa-solid fa-play"></i>`;
+            }
+            audio.ontimeupdate = () => {
+                if (!isNaN(audio.duration)) {
+                    fillEl.style.width = ((audio.currentTime / audio.duration) * 100) + '%';
+                    currentEl.innerText = formatAudioTime(audio.currentTime);
+                }
+            };
+            audio.onended = () => { btnEl.innerHTML = `<i class="fa-solid fa-play"></i>`; fillEl.style.width = '0%'; currentEl.innerText = "00:00"; };
+        }
+
+        function seekAudio(event, audioId) {
+            const audio = document.getElementById(audioId);
+            const bar = event.currentTarget;
+            if (!audio || isNaN(audio.duration)) return;
+            audio.currentTime = ((event.clientX - bar.getBoundingClientRect().left) / bar.getBoundingClientRect().width) * audio.duration;
+        }
+
+        function formatAudioTime(secs) {
+            if (isNaN(secs)) return "00:00";
+            return `${Math.floor(secs / 60).toString().padStart(2, '0')}:${Math.floor(secs % 60).toString().padStart(2, '0')}`;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            if (!input) return;
+            const text = input.value.trim();
+            if (!text) return;
+            try {
+                const ref = db.ref(`group_messages/${activeGroupId}`).push();
+                await ref.set({ senderId: currentUserId, senderName: currentUserName, text: text, timestamp: Date.now(), type: 'user' });
+                await db.ref(`groups/${activeGroupId}`).update({ lastMessage: `${currentUserName}: ${text}` });
+                input.value = "";
+            } catch (e) { showToast("Mesaj gönderilemedi."); }
+        }
+
+        async function sendSingleMedia(fileName, fileSize, fileType, fileBase64, mediaType) {
+            try {
+                const ref = db.ref(`group_messages/${activeGroupId}`).push();
+                await ref.set({
+                    senderId: currentUserId, senderName: currentUserName,
+                    text: mediaType === 'image' ? '📷 [Fotoğraf]' : '🎥 [Video]',
+                    fileName: fileName, fileSize: fileSize, fileType: fileType, fileData: fileBase64,
+                    timestamp: Date.now(), type: mediaType
+                });
+                await db.ref(`groups/${activeGroupId}`).update({ lastMessage: `${currentUserName}: ${mediaType === 'image' ? '📷 [Fotoğraf]' : '🎥 [Video]'}` });
+                showToast("Medya yüklendi.");
+            } catch (e) { showToast("Yükleme hatası."); }
+        }
+
+        async function sendAlbumMedia(albumItems) {
+            try {
+                const ref = db.ref(`group_messages/${activeGroupId}`).push();
+                await ref.set({
+                    senderId: currentUserId, senderName: currentUserName,
+                    text: `📷 [${albumItems.length} Resim Albümü]`,
+                    albumFiles: albumItems,
+                    timestamp: Date.now(), type: 'album'
+                });
+                await db.ref(`groups/${activeGroupId}`).update({ lastMessage: `${currentUserName}: 📷 [${albumItems.length} Resim]` });
+                showToast(`${albumItems.length} resim gönderildi.`);
+            } catch (e) { showToast("Albüm yüklenemedi."); }
+        }
+
+        async function sendFileMessage(fileName, fileSize, fileType, fileBase64) {
+            try {
+                const ref = db.ref(`group_messages/${activeGroupId}`).push();
+                await ref.set({ senderId: currentUserId, senderName: currentUserName, text: '📎 [Dosya]', fileName: fileName, fileSize: fileSize, fileType: fileType, fileData: fileBase64, timestamp: Date.now(), type: 'file' });
+                await db.ref(`groups/${activeGroupId}`).update({ lastMessage: `${currentUserName}: 📎 [Dosya]` });
+            } catch (e) { showToast("Dosya yüklenemedi."); }
+        }
+
+        function downloadFile(base64Data, fileName) {
+            const d = document.createElement('a');
+            d.href = base64Data; d.download = fileName || "dosya";
+            document.body.appendChild(d); d.click(); document.body.removeChild(d);
+            showToast("İndiriliyor...");
+        }
+
+        async function addSystemMessage(text) {
+            if (!activeGroupId) return;
+            try {
+                await db.ref(`group_messages/${activeGroupId}`).push({ text: text, timestamp: Date.now(), type: 'system' });
+            } catch (e) {}
+        }
+
+        function formatBytes(bytes) {
+            if (!bytes) return '0 Bytes';
+            const k = 1024, sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function escapeHtml(text) {
+            if (!text) return "";
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return String(text).replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+        function showToast(m) {
+            const t = document.getElementById('toast');
+            t.innerText = m; t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 4000);
+        }
+    </script>
+</body>
+</html>

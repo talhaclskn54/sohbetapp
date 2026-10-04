@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sohbet Arkadaşım</title>
+    <!-- FontAwesome ikon kütüphanesi -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #0f0f11;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 400px;
+            height: 100%;
+            max-height: 800px;
+            background-color: #151518;
+            border-radius: 28px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            border: 1px solid #222226;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Üst Kısım */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: #1c1c21;
+            padding: 12px 15px;
+            border-radius: 18px;
+            border: 1px solid #27272d;
+            flex-shrink: 0;
+        }
+
+        .logo-box-mini {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mini-logo-frame {
+            width: 45px;
+            height: 45px;
+            background: #111113;
+            border: 1.5px solid #ff2a2a;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 10px rgba(255, 42, 42, 0.2);
+            position: relative;
+        }
+
+        .mini-icon-container {
+            width: 24px;
+            height: 20px;
+            background: #ff2a2a;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .mini-icon-container svg {
+            width: 14px;
+            height: 14px;
+            fill: #111113;
+        }
+
+        .brand-title-area h1 {
+            font-size: 15px;
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-notification {
+            width: 40px;
+            height: 40px;
+            background-color: #202024;
+            color: #ffffff;
+            border: 1px solid #2d2d35;
+            border-radius: 12px;
+            font-size: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .btn-notification:hover {
+            border-color: #ff2a2a;
+            color: #ff2a2a;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background-color: #ff2a2a;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            display: none;
+        }
+
+        .btn-add-group {
+            width: 40px;
+            height: 40px;
+            background-color: #ff2a2a;
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            font-size: 22px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 42, 42, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .btn-add-group:hover {
+            background-color: #e60000;
+            transform: scale(1.05);
+        }
+
+        /* Butonlar ve Arama Çubuğu */
+        .action-container {
+            position: relative;
+            margin-bottom: 20px;
+            flex-shrink: 0;
+            height: 45px;
+        }
+
+        .action-buttons-row {
+            display: flex;
+            gap: 10px;
+            position: absolute;
+            width: 100%;
+            top: 0;
+            left: 0;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .action-buttons-row.hidden {
+            transform: scale(0.95) translateY(-10px);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .app-btn {
+            padding: 12px;
+            border: none;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-groups {
+            width: 45%;
+            background-color: #ff2a2a;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(255, 42, 42, 0.4);
+            flex-shrink: 0;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-groups.shrinking {
+            width: 0;
+            padding: 0;
+            opacity: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .btn-search {
+            flex-grow: 1;
+            background-color: #202024;
+            color: #ffffff;
+            border: 1px solid #2d2d35;
+        }
+
+        .app-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: #ffffff;
+            flex-shrink: 0;
+        }
+
+        .search-bar-row {
+            position: absolute;
+            width: 100%;
+            top: 0;
+            left: 0;
+            display: flex;
+            align-items: center;
+            background: #1c1c21;
+            border: 1px solid #ff2a2a;
+            border-radius: 14px;
+            padding: 0 12px;
+            height: 45px;
+            transform: scale(0.95) translateY(10px);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(255, 42, 42, 0.15);
+        }
+
+        .search-bar-row.active {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .search-input {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-close-btn {
+            background: none;
+            border: none;
+            color: #ff2a2a;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            color: #888891;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .groups-scroll-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .groups-scroll-container::-webkit-scrollbar {
+            width: 5px;
+        }
+        .groups-scroll-container::-webkit-scrollbar-thumb {
+            background: #27272d;
+            border-radius: 10px;
+        }
+
+        .group-card {
+            background-color: #1c1c21;
+            border: 1px solid #27272d;
+            border-radius: 14px;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .group-card:hover {
+            border-color: #ff2a2a;
+            background-color: #222228;
+        }
+
+        .group-info-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .group-avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #222228, #32323b);
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #ff2a2a;
+            border: 1px solid rgba(255, 42, 42, 0.2);
+            flex-shrink: 0;
+        }
+
+        .group-details {
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .group-details h3 {
+            font-size: 15px;
+            color: #ffffff;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .group-details p {
+            font-size: 13px;
+            color: #94949e;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .group-actions-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+            margin-left: 10px;
+        }
+
+        .group-badge {
+            background-color: rgba(255, 42, 42, 0.15);
+            color: #ff2a2a;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 8px;
+        }
+
+        .btn-group-action {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 13px;
+        }
+
+        .btn-delete-group {
+            background-color: rgba(255, 42, 42, 0.15);
+            color: #ff2a2a;
+        }
+        .btn-delete-group:hover {
+            background-color: #ff2a2a;
+            color: #fff;
+        }
+
+        .btn-leave-group {
+            background-color: rgba(113, 113, 122, 0.2);
+            color: #a1a1aa;
+        }
+        .btn-leave-group:hover {
+            background-color: #71717a;
+            color: #fff;
+        }
+
+        /* POPUP STYLES */
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 100;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            width: 90%;
+            background-color: #1b1b20;
+            border: 1px solid #32323d;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 18px;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: #131316;
+            border: 1px solid #2d2d35;
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 14px;
+            margin-bottom: 12px;
+            outline: none;
+            text-align: center;
+        }
+
+        .modal-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-join-code {
+            background-color: #ff2a2a;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .divider {
+            font-size: 12px;
+            color: #71717a;
+            margin: 10px 0;
+            text-transform: uppercase;
+        }
+
+        .btn-open-create-modal {
+            background-color: transparent;
+            color: #ff2a2a;
+            border: 1px solid rgba(255, 42, 42, 0.4);
+        }
+
+        /* İKİNCİ POPUP: YENİ GRUP OLUŞTURMA */
+        .sub-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 150;
+        }
+
+        .sub-modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .sub-modal-content {
+            width: 92%;
+            max-height: 88vh;
+            background-color: #1b1b20;
+            border: 1px solid #ff2a2a;
+            border-radius: 20px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            overflow-y: auto;
+        }
+
+        .sub-modal-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .visibility-options-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .visibility-btn {
+            flex: 1;
+            padding: 10px 8px;
+            background: #131316;
+            border: 1px solid #2d2d35;
+            border-radius: 10px;
+            color: #a1a1aa;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .visibility-btn.active {
+            background: rgba(255, 42, 42, 0.15);
+            border-color: #ff2a2a;
+            color: #ff2a2a;
+        }
+
+        .users-search-input {
+            width: 100%;
+            padding: 10px 12px;
+            background-color: #131316;
+            border: 1px solid #2d2d35;
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 13px;
+            margin-bottom: 8px;
+            outline: none;
+        }
+
+        .users-list-container {
+            max-height: 140px;
+            overflow-y: auto;
+            background: #131316;
+            border: 1px solid #2d2d35;
+            border-radius: 10px;
+            padding: 6px;
+            margin-bottom: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 8px;
+            background: #1c1c21;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #e4e4e7;
+            cursor: pointer;
+        }
+
+        .user-item input {
+            accent-color: #ff2a2a;
+            width: 15px;
+            height: 15px;
+        }
+
+        .section-label-small {
+            font-size: 12px;
+            color: #a1a1aa;
+            margin-bottom: 6px;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .permissions-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .perm-btn {
+            flex: 1;
+            padding: 8px 4px;
+            background: #131316;
+            border: 1px solid #2d2d35;
+            border-radius: 8px;
+            color: #a1a1aa;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .perm-btn.active {
+            background: rgba(255, 42, 42, 0.15);
+            border-color: #ff2a2a;
+            color: #ff2a2a;
+        }
+
+        .perm-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .modal-close {
+            margin-top: 6px;
+            background: none;
+            border: none;
+            color: #888891;
+            font-size: 13px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        /* BİLDİRİMLER / DAVETLER ALANI */
+        .notification-item {
+            background: #131316;
+            border: 1px solid #2d2d35;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            text-align: left;
+        }
+
+        .notification-item p {
+            font-size: 13px;
+            color: #e4e4e7;
+        }
+
+        .notification-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-notif-accept {
+            flex: 1;
+            background-color: #ff2a2a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-notif-reject {
+            flex: 1;
+            background-color: #27272d;
+            color: #a1a1aa;
+            border: none;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ff3b3c; color: white; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; z-index: 10000; display: none; box-shadow: 0 4px 15px rgba(255,59,60,0.4); text-align: center; }
+    </style>
+</head>
+<body>
+    <div id="toast"></div>
+
+    <div class="app-container">
+        
+        <!-- Üst Bar -->
+        <div class="top-header">
+            <div class="logo-box-mini">
+                <div class="mini-logo-frame">
+                    <div class="mini-icon-container">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm3-3c-.83 0-1.5-.67-1.5-1.5S18.67 9 19.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="brand-title-area">
+                    <h1>Sohbet Arkadaşım</h1>
+                </div>
+            </div>
+            
+            <div class="header-actions">
+                <!-- Kalp/Bildirim Butonu -->
+                <button class="btn-notification" id="openNotificationsBtn">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="notification-badge" id="notifBadge">0</span>
+                </button>
+                <button class="btn-add-group" id="openModalBtn">+</button>
+            </div>
+        </div>
+
+        <!-- Butonlar ve Arama Çubuğu -->
+        <div class="action-container">
+            <div class="action-buttons-row" id="actionButtonsRow">
+                <button class="app-btn btn-groups" id="groupsBtn">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"></path>
+                    </svg>
+                    Gruplarım
+                </button>
+                <button class="app-btn btn-search" id="openSearchBtn">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+                    </svg>
+                    Grup Ara
+                </button>
+            </div>
+
+            <div class="search-bar-row" id="searchBarRow">
+                <input type="text" id="searchInput" class="search-input" placeholder="Grup ismi ara...">
+                <button class="search-close-btn" id="closeSearchBtn">✕</button>
+            </div>
+        </div>
+
+        <div class="section-title" id="listSectionTitle">Aktif Sohbet Grupları</div>
+        <div class="groups-scroll-container" id="groupsContainer"></div>
+
+        <!-- ANA POPUP -->
+        <div class="modal-overlay" id="groupModal">
+            <div class="modal-content">
+                <div class="modal-title">Grup İşlemleri</div>
+                <input type="text" id="groupCodeInput" class="modal-input" placeholder="Grup Kodunu Girin...">
+                <button class="modal-btn btn-join-code" id="joinGroupBtn">Kod ile Katıl</button>
+                <div class="divider">veya</div>
+                <button class="modal-btn btn-open-create-modal" id="openCreateModalBtn">Yeni Grup Oluştur</button>
+                <br>
+                <button class="modal-close" id="closeModalBtn">İptal</button>
+            </div>
+        </div>
+
+        <!-- İKİNCİ POPUP: YENİ GRUP OLUŞTURMA -->
+        <div class="sub-modal-overlay" id="createGroupModal">
+            <div class="sub-modal-content">
+                <div class="sub-modal-title">Yeni Grup Oluştur</div>
+                <input type="text" id="newGroupNameInput" class="modal-input" placeholder="Grup Adı Girin...">
+                
+                <div class="section-label-small">Grup Türü Seçimi</div>
+                <div class="visibility-options-row">
+                    <button type="button" class="visibility-btn active" data-vis="private">Kod ile Giriş</button>
+                    <button type="button" class="visibility-btn" data-vis="public">Herkese Açık</button>
+                </div>
+
+                <div class="section-label-small">Tüm Kullanıcılar</div>
+                <input type="text" id="userSearchInput" class="users-search-input" placeholder="Kullanıcı ara...">
+                <div class="users-list-container" id="usersListContainer">
+                    <div style="color:#71717a; font-size:12px; text-align:center; padding:10px;">Kullanıcılar yükleniyor...</div>
+                </div>
+
+                <div class="section-label-small">Gruba yazı yazabilecekler</div>
+                <div class="permissions-row">
+                    <button type="button" class="perm-btn active" data-perm="everyone">Herkes</button>
+                    <button type="button" class="perm-btn" data-perm="creator">Kurucu</button>
+                    <button type="button" class="perm-btn" data-perm="auth">Yetkililer</button>
+                </div>
+
+                <button class="modal-btn btn-join-code" id="confirmCreateGroupBtn">Grubu Oluştur</button>
+                <button class="modal-close" id="closeCreateModalBtn">Geri Dön</button>
+            </div>
+        </div>
+
+        <!-- BİLDİRİMLER / DAVETLER MODALI -->
+        <div class="modal-overlay" id="notificationsModal">
+            <div class="modal-content" style="max-height: 80vh; overflow-y: auto;">
+                <div class="modal-title">Grup Davetleri</div>
+                <div id="notificationsContainer">
+                    <p style="color: #71717a; font-size: 13px;">Bildiriminiz bulunmuyor.</p>
+                </div>
+                <button class="modal-close" id="closeNotificationsBtn" style="margin-top: 15px;">Kapat</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Firebase SDK Entegrasyonu -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCoDVcOFPZkaCUr-ac1GsuAkxm8nNgzL3M",
+            authDomain: "sohbet-arkadasim-b1402.firebaseapp.com",
+            projectId: "sohbet-arkadasim-b1402",
+            storageBucket: "sohbet-arkadasim-b1402.firebasestorage.app",
+            messagingSenderId: "345189828948",
+            appId: "1:345189828948:web:60b6d774230559956c60c1",
+            measurementId: "G-0ZTJJXFX87"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        let currentUserId = localStorage.getItem('gizliChatID');
+        let currentUserName = localStorage.getItem('chat_user_name') || "Misafir";
+        let isSearchingPublic = false;
+
+        let selectedVisibility = "private";
+        let selectedPermission = "everyone";
+
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUserId = user.uid;
+                localStorage.setItem('gizliChatID', user.uid);
+                db.ref(`users/${user.uid}`).once('value', snapshot => {
+                    if(snapshot.val() && snapshot.val().username) {
+                        currentUserName = snapshot.val().username;
+                        localStorage.setItem('chat_user_name', currentUserName);
+                    }
+                });
+            } else if (!currentUserId) {
+                showToast("Oturum bulunamadı.");
+                setTimeout(() => { window.location.href = "go:Giris"; }, 1500);
+            }
+            loadGroups();
+            loadNotifications();
+        });
+
+        const groupModal = document.getElementById('groupModal');
+        const createGroupModal = document.getElementById('createGroupModal');
+        const notificationsModal = document.getElementById('notificationsModal');
+        
+        document.getElementById('openModalBtn').addEventListener('click', () => groupModal.classList.add('active'));
+        document.getElementById('closeModalBtn').addEventListener('click', () => groupModal.classList.remove('active'));
+        
+        document.getElementById('openCreateModalBtn').addEventListener('click', () => {
+            groupModal.classList.remove('active');
+            createGroupModal.classList.add('active');
+            fetchAllUsers();
+        });
+
+        document.getElementById('closeCreateModalBtn').addEventListener('click', () => {
+            createGroupModal.classList.remove('active');
+        });
+
+        document.getElementById('openNotificationsBtn').addEventListener('click', () => {
+            notificationsModal.classList.add('active');
+        });
+
+        document.getElementById('closeNotificationsBtn').addEventListener('click', () => {
+            notificationsModal.classList.remove('active');
+        });
+
+        const visButtons = document.querySelectorAll('.visibility-btn');
+        visButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                visButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedVisibility = btn.dataset.vis;
+
+                const permButtons = document.querySelectorAll('.perm-btn');
+                if (selectedVisibility === "public") {
+                    permButtons.forEach(pb => {
+                        pb.classList.remove('active');
+                        if (pb.dataset.perm === "everyone") pb.classList.add('active');
+                        pb.classList.add('disabled');
+                    });
+                    selectedPermission = "everyone";
+                } else {
+                    permButtons.forEach(pb => pb.classList.remove('disabled'));
+                }
+            });
+        });
+
+        const permButtons = document.querySelectorAll('.perm-btn');
+        permButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (btn.classList.contains('disabled')) return;
+                permButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedPermission = btn.dataset.perm;
+            });
+        });
+
+        const groupsBtn = document.getElementById('groupsBtn');
+        const searchBarRow = document.getElementById('searchBarRow');
+        const searchInput = document.getElementById('searchInput');
+        const listSectionTitle = document.getElementById('listSectionTitle');
+
+        document.getElementById('openSearchBtn').addEventListener('click', () => {
+            isSearchingPublic = true;
+            listSectionTitle.innerText = "Herkese Açık Gruplar";
+            groupsBtn.classList.add('shrinking');
+            searchBarRow.classList.add('active');
+            searchInput.focus();
+            loadGroups();
+        });
+
+        document.getElementById('closeSearchBtn').addEventListener('click', () => {
+            isSearchingPublic = false;
+            listSectionTitle.innerText = "Aktif Sohbet Grupları";
+            searchBarRow.classList.remove('active');
+            groupsBtn.classList.remove('shrinking');
+            searchInput.value = '';
+            loadGroups();
+        });
+
+        searchInput.addEventListener('input', (e) => filterGroups(e.target.value));
+
+        function fetchAllUsers() {
+            const container = document.getElementById('usersListContainer');
+            db.ref('users').once('value', (snapshot) => {
+                container.innerHTML = "";
+                const users = snapshot.val();
+                if (!users) {
+                    container.innerHTML = `<div style="color:#71717a; font-size:12px; text-align:center; padding:10px;">Kullanıcı bulunamadı.</div>`;
+                    return;
+                }
+                Object.keys(users).forEach(uid => {
+                    if (uid === currentUserId) return;
+                    const user = users[uid];
+                    const userName = user.username || "İsimsiz";
+
+                    const item = document.createElement('label');
+                    item.className = 'user-item';
+                    item.innerHTML = `
+                        <input type="checkbox" value="${uid}" data-name="${userName}">
+                        <span>${userName}</span>
+                    `;
+                    container.appendChild(item);
+                });
+            });
+        }
+
+        document.getElementById('userSearchInput').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const items = document.querySelectorAll('#usersListContainer .user-item');
+            items.forEach(item => {
+                const name = item.querySelector('span').innerText.toLowerCase();
+                item.style.display = name.includes(term) ? 'flex' : 'none';
+            });
+        });
+
+        document.getElementById('confirmCreateGroupBtn').addEventListener('click', async () => {
+            const groupName = document.getElementById('newGroupNameInput').value.trim();
+            if (!groupName) { showToast("Lütfen bir grup adı girin."); return; }
+
+            const groupCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+            const newGroupRef = db.ref('groups').push();
+            const groupId = newGroupRef.key;
+
+            let members = [{ uid: currentUserId, username: currentUserName, role: 'founder' }];
+            const selectedCheckboxes = document.querySelectorAll('#usersListContainer input:checked');
+
+            const groupData = {
+                id: groupId,
+                name: groupName,
+                code: groupCode,
+                visibility: selectedVisibility,
+                permission: selectedPermission,
+                creator: currentUserId,
+                creatorName: currentUserName,
+                members: members,
+                lastMessage: "Grup kuruldu."
+            };
+
+            await newGroupRef.set(groupData);
+
+            if (selectedCheckboxes.length > 0) {
+                const updates = {};
+                selectedCheckboxes.forEach(cb => {
+                    const invitedUid = cb.value;
+                    const nRef = db.ref(`notifications/${invitedUid}`).push();
+                    updates[`notifications/${invitedUid}/${nRef.key}`] = {
+                        type: 'invite',
+                        groupId: groupId,
+                        groupName: groupName,
+                        inviterName: currentUserName,
+                        timestamp: Date.now()
+                    };
+                });
+                await db.ref().update(updates);
+            }
+
+            showToast(`Grup oluşturuldu! Kod: ${groupCode}`);
+            document.getElementById('newGroupNameInput').value = '';
+            createGroupModal.classList.remove('active');
+            loadGroups();
+        });
+
+        document.getElementById('joinGroupBtn').addEventListener('click', async () => {
+            const code = document.getElementById('groupCodeInput').value.trim().toUpperCase();
+            if (!code) { showToast("Lütfen kod girin."); return; }
+
+            db.ref('groups').orderByChild('code').equalTo(code).once('value', async (snapshot) => {
+                const data = snapshot.val();
+                if (!data) { showToast("Grup bulunamadı."); return; }
+
+                const groupId = Object.keys(data)[0];
+                const group = data[groupId];
+                let members = group.members || [];
+
+                if (members.some(m => (typeof m === 'string' ? m === currentUserId : m.uid === currentUserId))) {
+                    showToast("Zaten bu grubun üyesisiniz!");
+                    return;
+                }
+
+                members.push({ uid: currentUserId, username: currentUserName, role: 'member' });
+                await db.ref(`groups/${groupId}`).update({ members: members });
+
+                showToast(`"${group.name}" grubuna katıldınız!`);
+                document.getElementById('groupCodeInput').value = '';
+                groupModal.classList.remove('active');
+                loadGroups();
+            });
+        });
+
+        let allGroups = [];
+        const groupsContainer = document.getElementById('groupsContainer');
+
+        function loadGroups() {
+            db.ref('groups').on('value', (snapshot) => {
+                allGroups = [];
+                const data = snapshot.val();
+                if (data && currentUserId) {
+                    Object.keys(data).forEach((key) => {
+                        allGroups.push({ id: key, ...data[key] });
+                    });
+                }
+                renderActiveViewGroups();
+            });
+        }
+
+        function renderActiveViewGroups() {
+            if (isSearchingPublic) {
+                renderGroups(allGroups.filter(g => g.visibility === 'public'));
+            } else {
+                renderGroups(allGroups.filter(g => {
+                    const members = g.members || [];
+                    return members.some(m => (typeof m === 'string' ? m === currentUserId : m.uid === currentUserId));
+                }));
+            }
+        }
+
+        function renderGroups(groups) {
+            groupsContainer.innerHTML = "";
+            if (groups.length === 0) {
+                groupsContainer.innerHTML = `<p style="text-align:center; color:#71717a; font-size:13px; margin-top:20px;">Grup bulunamadı.</p>`;
+                return;
+            }
+            groups.forEach((group) => {
+                const initials = group.name ? group.name.substring(0, 2).toUpperCase() : "GR";
+                const card = document.createElement('div');
+                card.className = 'group-card';
+                
+                let rawLastMsg = group.lastMessage || 'Sohbete katılmak için dokun';
+                const truncatedMsg = rawLastMsg.length > 38 ? rawLastMsg.substring(0, 38) + '...' : rawLastMsg;
+                const badgeText = group.visibility === 'public' ? 'HERKES' : (group.code || 'ÖZEL');
+                const isCreator = group.creator === currentUserId;
+
+                card.innerHTML = `
+                    <div class="group-info-wrapper" onclick="handleGroupCardClick('${group.id}')">
+                        <div class="group-avatar">${initials}</div>
+                        <div class="group-details">
+                            <h3>${group.name}</h3>
+                            <p>${truncatedMsg}</p>
+                        </div>
+                    </div>
+                    <div class="group-actions-right">
+                        <span class="group-badge">${badgeText}</span>
+                        ${isCreator ? 
+                            `<button class="btn-group-action btn-delete-group" onclick="deleteGroup('${group.id}')" title="Sil"><i class="fa-solid fa-trash"></i></button>` : 
+                            `<button class="btn-group-action btn-leave-group" onclick="leaveGroup('${group.id}')" title="Çık"><i class="fa-solid fa-right-from-bracket"></i></button>`
+                        }
+                    </div>
+                `;
+                groupsContainer.appendChild(card);
+            });
+        }
+
+        async function handleGroupCardClick(groupId) {
+            const group = allGroups.find(g => g.id === groupId);
+            if (!group) return;
+
+            let members = group.members || [];
+            const isMember = members.some(m => (typeof m === 'string' ? m === currentUserId : m.uid === currentUserId));
+
+            if (!isMember && group.visibility === 'public') {
+                members.push({ uid: currentUserId, username: currentUserName, role: 'member' });
+                await db.ref(`groups/${group.id}`).update({ members: members });
+            } else if (!isMember) {
+                showToast("Bu gruba erişmek için kod girmelisiniz.");
+                return;
+            }
+
+            localStorage.setItem('active_group_id', group.id);
+            localStorage.setItem('active_group_name', group.name);
+            localStorage.setItem('active_group_permission', group.permission || group.chatPermission || 'everyone');
+            
+            window.location.href = "Mesaj.html";
+        }
+
+        window.deleteGroup = async function(groupId) {
+            if(confirm("Bu grubu silmek istediğinize emin misiniz?")) {
+                await db.ref(`groups/${groupId}`).remove();
+                showToast("Grup silindi.");
+            }
+        };
+
+        window.leaveGroup = async function(groupId) {
+            const group = allGroups.find(g => g.id === groupId);
+            if (!group) return;
+
+            if(confirm("Gruptan çıkmak istiyor musunuz?")) {
+                let members = group.members || [];
+                members = members.filter(m => (typeof m === 'string' ? m !== currentUserId : m.uid !== currentUserId));
+                await db.ref(`groups/${groupId}`).update({ members: members });
+                showToast("Gruptan çıkıldı.");
+            }
+        };
+
+        // BİLDİRİMLERİ DİNLEME VE DAVET ONAYLAMA
+        function loadNotifications() {
+            if (!currentUserId) return;
+            const notifRef = db.ref(`notifications/${currentUserId}`);
+            notifRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                const container = document.getElementById('notificationsContainer');
+                const badge = document.getElementById('notifBadge');
+                container.innerHTML = "";
+
+                if (!data) {
+                    container.innerHTML = `<p style="color: #71717a; font-size: 13px; text-align:center;">Bildiriminiz bulunmuyor.</p>`;
+                    badge.style.display = 'none';
+                    return;
+                }
+
+                const keys = Object.keys(data);
+                badge.innerText = keys.length;
+                badge.style.display = 'flex';
+
+                keys.forEach(notifKey => {
+                    const notif = data[notifKey];
+                    const item = document.createElement('div');
+                    item.className = 'notification-item';
+                    
+                    item.innerHTML = `
+                        <p><b>${notif.inviterName}</b> sizi <b>"${notif.groupName}"</b> grubuna davet ediyor.</p>
+                        <div class="notification-actions">
+                            <button class="btn-notif-accept" onclick="acceptInvite('${notifKey}', '${notif.groupId}', '${notif.groupName}')">Kabul Et</button>
+                            <button class="btn-notif-reject" onclick="rejectInvite('${notifKey}')">Reddet</button>
+                        </div>
+                    `;
+                    container.appendChild(item);
+                });
+            });
+        }
+
+        window.acceptInvite = async function(notifKey, groupId, groupName) {
+            db.ref(`groups/${groupId}`).once('value', async (snapshot) => {
+                const group = snapshot.val();
+                if (group) {
+                    let members = group.members || [];
+                    if (!members.some(m => (typeof m === 'string' ? m === currentUserId : m.uid === currentUserId))) {
+                        members.push({ uid: currentUserId, username: currentUserName, role: 'member' });
+                        await db.ref(`groups/${groupId}`).update({ members: members });
+                    }
+                }
+                await db.ref(`notifications/${currentUserId}/${notifKey}`).remove();
+                showToast(`"${groupName}" grubuna katıldınız!`);
+                notificationsModal.classList.remove('active');
+            });
+        };
+
+        window.rejectInvite = async function(notifKey) {
+            await db.ref(`notifications/${currentUserId}/${notifKey}`).remove();
+            showToast("Davet reddedildi.");
+        };
+
+        function filterGroups(query) {
+            const term = query.toLowerCase();
+            const cards = groupsContainer.querySelectorAll('.group-card');
+            cards.forEach(card => {
+                const name = card.querySelector('h3').innerText.toLowerCase();
+                card.style.display = name.includes(term) ? 'flex' : 'none';
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "Sohbet Uygulamam",
+  "short_name": "SohbetApp",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "https://cdn.phototourl.com/member/2026-10-04-aa3b1b93-a620-4604-9ed1-723a5d321d15.jpg",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
